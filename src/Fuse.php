@@ -123,15 +123,15 @@ class Fuse {
         $this->options = $options;
 
         // Add boolean type options
-        for ($i = 0, $keys = ['sort', 'shouldSort', 'tokenize'], $len = sizeof($keys); $i < $len; $i++) {
+        for ($i = 0, $keys = ['shouldSort', 'tokenize', 'verbose'], $len = sizeof($keys); $i < $len; $i++) {
             $key = $keys[$i];
             $this->options[$key] = array_key_exists($key, $options)
                 ? $options[$key]
-                : isset(static::$defaultOptions[$key]);
+                : static::$defaultOptions[$key];
         }
 
         // Add all other options
-        for ($i = 0, $keys = ['searchFn', 'sortFn', 'keys', 'getFn', 'include', 'verbose', 'tokenSeparator'], $len = sizeof($keys); $i < $len; $i++) {
+        for ($i = 0, $keys = ['searchFn', 'sortFn', 'keys', 'getFn', 'include', 'tokenSeparator'], $len = sizeof($keys); $i < $len; $i++) {
             $key = $keys[$i];
             $this->options[$key] = array_key_exists($key, $options)
                 ? $options[$key]
