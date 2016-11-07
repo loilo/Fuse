@@ -54,20 +54,12 @@ Array
   [0] => Array
     (
       [title] => The Lock Artist
-      [author] => Array
-        (
-          [firstName] => Steve
-          [lastName] => Hamilton
-        )
+      [author] => Steve Hamilton
     )
   [1] => Array
     (
       [title] => HTML5
-      [author] => Array
-        (
-          [firstName] => Remy
-          [lastName] => Sharp
-        )
+      [author] => Remy Sharp
     )
 )
 */
