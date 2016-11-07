@@ -34,7 +34,7 @@ class SearchListTest extends TestCase {
 		// ...we get a list containing 2 items...
 		$this->assertEquals(sizeof($result), 2);
 
-		// ...whose first value is the index of "University Mannheim"
-		$this->assertEquals($result[0], 1);
+		// ...whose first value is the index of "FH Mannheim"
+		$this->assertEquals($result[0], 0);
 	}
 }
