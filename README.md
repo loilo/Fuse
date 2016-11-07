@@ -1,8 +1,8 @@
 # Fuse
 
-*Fuzzy search for PHP based on Bitap algorithm*
+*Fuzzy search for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
 
-This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) package and (as of their version 2.5.0) provides 100% API compatibility.
+This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) project and (as of their version 2.5.0) provides 100% API compatibility.
 
 For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/)
 
@@ -17,7 +17,7 @@ For an approximate demonstration of what this library can do, check out their [d
 
 This package is available via Composer. To add it to your project, just run:
 
-`composer require loilo/fuse dev-master`
+`composer require loilo/fuse`
 
 ## Usage
 
