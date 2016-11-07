@@ -7,15 +7,71 @@ This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) packa
 For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/)
 
 - [Installation](#installation)
+- [Usage](#usage)
 - [Options](#options)
 - [Methods](#methods)
 - [Weighted Search](#weighted-search)
 - [Contributing](#contributing)
 
 ## Installation
+
 This package is available via Composer. To add it to your project, just run:
 
-`composer require loilo/fuse`
+`composer require loilo/fuse dev-master`
+
+## Usage
+
+```php
+<?php
+require_once 'vendor/autoload.php';
+
+$fuse = new \Fuse\Fuse([
+  [
+    "title" => "Old Man's War",
+    "author" => "John Scalzi"
+  ],
+  [
+    "title" => "The Lock Artist",
+    "author" => "Steve Hamilton"
+  ],
+  [
+    "title" => "HTML5",
+    "author" => "Remy Sharp"
+  ],
+  [
+    "title" => "Right Ho Jeeves",
+    "author" => "P.D Woodhouse"
+  ],
+], [
+  "keys" => [ "title", "author" ],
+]);
+
+$fuse->search('hamil');
+
+/*
+Array
+(
+  [0] => Array
+    (
+      [title] => The Lock Artist
+      [author] => Array
+        (
+          [firstName] => Steve
+          [lastName] => Hamilton
+        )
+    )
+  [1] => Array
+    (
+      [title] => HTML5
+      [author] => Array
+        (
+          [firstName] => Remy
+          [lastName] => Sharp
+        )
+    )
+)
+*/
+```
 
 ## Options
 
