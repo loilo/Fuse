@@ -35,6 +35,7 @@ class SearchListTest extends TestCase {
 		$this->assertEquals(sizeof($result), 2);
 
 		// ...whose first value is the index of "University Mannheim"
-		$this->assertEquals($result[0], 1);
+		// This test is disabled because it's from the official Fuse.js test suite but Fuse.js itself doesn't pass it
+		// $this->assertEquals($result[0], 1);
 	}
 }
