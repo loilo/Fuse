@@ -68,11 +68,11 @@ class BitapSearcher implements Searcher {
         $i = 0;
 
         for ($i = 0; $i < $this->patternLen; $i++) {
-            $mask[$this->pattern[$i]] = 0;
+            $mask[mb_substr($this->pattern, $i, 1)] = 0;
         }
 
         for ($i = 0; $i < $this->patternLen; $i++) {
-            $mask[$this->pattern[$i]] |= 1 << (mb_strlen($this->pattern) - $i - 1);
+            $mask[mb_substr($this->pattern, $i, 1)] |= 1 << (mb_strlen($this->pattern) - $i - 1);
         }
 
         return $mask;
