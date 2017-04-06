@@ -10,7 +10,7 @@ class Fuse {
     protected $tokenSearchers;
     protected $fullSearcher;
 
-    static $VERSION = '1.0.0';
+    static $VERSION = '2.6.2';
 
     protected static $defaultOptions = [
         // The name of the identifier property. If specified, the returned result will be a list
@@ -122,6 +122,25 @@ class Fuse {
         $this->list = $list;
         $this->options = $options;
 
+        foreach (static::$defaultOptions as $key => &$defaultOptionValue) {
+            if (!array_key_exists($key, static::$defaultOptions)) {
+                continue;
+            }
+
+            // Add boolean type options
+            if (is_bool($defaultOptionValue)) {
+                $this->options[$key] = array_key_exists($key, $options)
+                    ? $options[$key]
+                    : $defaultOptionValue;
+
+            // Add all other options
+            } else {
+                $this->options[$key] = array_key_exists($key, $options) && $options[$key]
+                    ? $options[$key]
+                    : $defaultOptionValue;
+            }
+        }
+
         // Add boolean type options
         for ($i = 0, $keys = ['shouldSort', 'tokenize', 'verbose'], $len = sizeof($keys); $i < $len; $i++) {
             $key = $keys[$i];
@@ -144,12 +163,6 @@ class Fuse {
         }
     }
 
-    /**
-     * Sets a new list for Fuse to match against.
-     * @param {Array} list
-     * @return {Array} The newly set list
-     * @public
-     */
     public function set ($list) {
         $this->list = $list;
         return $list;

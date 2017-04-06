@@ -2,7 +2,7 @@
 
 *Fuzzy search for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
 
-This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) project and (as of their version 2.5.0) provides 100% API compatibility.
+This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) project and (as of their version 2.6.2) provides 100% API compatibility.
 
 For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/)
 
@@ -190,6 +190,18 @@ A regular expression string used to separate words of the search pattern when se
 **matchAllTokens** (*type*: `bool`, *default*: `false`)
 
 When `true`, the result set will only include records that match all tokens. Will only work if `tokenize` is also true.
+
+---
+
+**findAllMatches** (*type*: `bool`, *default*: `false`)
+
+When `true`, the matching function will continue to the end of a search pattern even if a perfect match has already been located in the string.
+
+---
+
+**minMatchCharLength** (*type*: `int`, *default*: `1`)
+
+When set to include matches, only those whose length exceeds this value will be returned. (For instance, if you want to ignore single character index returns, set to `2`)
 
 ## Methods
 

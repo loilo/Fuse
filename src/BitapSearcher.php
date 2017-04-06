@@ -33,7 +33,14 @@ class BitapSearcher implements Searcher {
         'threshold' => 0.6,
 
         // Machine word size
-        'maxPatternLength' => 32
+        'maxPatternLength' => 32,
+
+        // Minimum number of characters that must be matched before a result is considered a match
+        'minMatchCharLength' => 1,
+
+        // When true, the algorithm continues searching to the end of the input even if a perfect
+        // match is found before the end of the same input.
+        'findAllMatches' => false
     ];
 
     public function __construct ($pattern, $options = []) {
@@ -142,6 +149,7 @@ class BitapSearcher implements Searcher {
             ];
         }
 
+        $findAllMatches = $options['findAllMatches'];
         $location = $options['location'];
         // Set starting location at beginning text and initialize the alphabet.
         $textLen = mb_strlen($text);
@@ -189,7 +197,12 @@ class BitapSearcher implements Searcher {
             // Use the result from this iteration as the maximum for the next.
             $binMax = $binMid;
             $start = max(1, $location - $binMid + 1);
-            $finish = min($location + $binMid, $textLen) + $this->patternLen;
+
+            if ($findAllMatches) {
+                $finish = $textLen;
+            } else {
+                $finish = min($location + $binMid, $textLen) + $this->patternLen;
+            }
 
             // Initialize the bit array
             $bitArr = array_fill(0, $finish + 2, null);
@@ -263,12 +276,16 @@ class BitapSearcher implements Searcher {
                 $start = $i;
             } else if (!$match && $start !== -1) {
                 $end = $i - 1;
-                $matchedIndices[] = [$start, $end];
+                if (($end - $start) + 1 >= $this->options['minMatchCharLength']) {
+                    $matchedIndices[] = [$start, $end];
+                }
                 $start = -1;
             }
         }
         if ($matchMask[$i - 1]) {
-            $matchedIndices[] = [$start, $i - 1];
+            if (($i - 1 - $start) + 1 >= $this->options['minMatchCharLength']) {
+                $matchedIndices[] = [$start, $i - 1];
+            }
         }
         return $matchedIndices;
     }
