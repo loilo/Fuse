@@ -1,8 +1,10 @@
 # Fuse
 
-*Fuzzy search for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
+*A fuzzy search library for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
 
-This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) project and (as of their version 2.6.2) provides 100% API compatibility.
+This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) project and provides 100% API compatibility.
+
+> Latest compatible Fuse.js version: 3.0.5
 
 For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/)
 
@@ -13,11 +15,13 @@ For an approximate demonstration of what this library can do, check out their [d
 - [Weighted Search](#weighted-search)
 - [Contributing](#contributing)
 
+
 ## Installation
 
 This package is available via Composer. To add it to your project, just run:
 
 `composer require loilo/fuse`
+
 
 ## Usage
 
@@ -65,11 +69,12 @@ Array
 */
 ```
 
+
 ## Options
 
 **keys** (*type*: `array`)
 
-List of properties that will be searched. This also supports nested properties:
+List of properties that will be searched. This supports nested properties, weighted search, searching in arrays of strings and associative arrays etc:
 
 ```php
 $books = [
@@ -100,13 +105,15 @@ Indicates whether comparisons should be case sensitive.
 
 ---
 
-**include** (*type*: `array`, *default*: `[]`)
+**includeScore** (*type*: `bool`, *default*: `false`)
 
-An array of values that should be included from the searcher's output. When this array contains elements, each result in the list will be of the form `[ "item" => ..., "include1" => ..., "include2" => ... ]`. Values you can include are `score`, `matches`. For example:
+Whether the score should be included in the result set. A score of `0` indicates a perfect match, while a score of `1` indicates a complete mismatch.
 
-```php
-[ "include" => [ "score", "matches" ] ]
-```
+---
+
+**includeMatches** (*type*: `bool`, *default*: `false`)
+
+Whether the matches should be included in the result set. When true, each record in the result set will include the indices of the matched characters: `"indices" => [ $start, $end ]`. These can consequently be used for highlighting purposes.
 
 ---
 
@@ -116,30 +123,26 @@ Whether to sort the result list, by score.
 
 ---
 
-**searchFn** (*type*: `\Fuse\Searcher`, *default*: `\Fuse\BitapSearcher::class`)
+**getFn** (*type*: `function`, *default*: `\Fuse\Helpers\deep_value`)
 
-The search class to use. It is required to implement the `\Fuse\Searcher` interface.
-
----
-
-**getFn** (*type*: `function`, *default*: `\Fuse\Fuse::defaultValueGetter`)
-
-The get function to use when fetching an object's properties. The default will search nested paths like *foo.bar.baz*.
+The get function to use when fetching an associative array's properties. The default will search nested paths like `foo.bar.baz`.
 
 ```php
 /*
-@param $obj  The object or associative array being searched
-@param $path The path to the target property
-*/
+ * @param {array|object} $data The object or associative array being searched
+ * @param {string}       $path The path to the target property
+ */
 
-// example using an object with a `getter` method
-'getFn' => function ($obj, $path) {
-  return $obj->get($path);
+'getFn' => function ($data, $path) {
+    // Example using a ->get() method on objects and simple index access on arrays
+    return is_object($data)
+        ? $data->get($path)
+        : $data[$path];
 }
 ```
 ---
 
-**sortFn** (*type*: `function`, *default*: `\Fuse\Fuse::defaultScoreSort`)
+**sortFn** (*type*: `function`, *default*: sort by score)
 
 The function that is used for sorting the result list.
 
@@ -203,7 +206,12 @@ When `true`, the matching function will continue to the end of a search pattern 
 
 When set to include matches, only those whose length exceeds this value will be returned. (For instance, if you want to ignore single character index returns, set to `2`)
 
+
 ## Methods
+
+The following methods are available on a `Fuse\Fuse` instance:
+
+---
 
 **`search($pattern)`**
 
@@ -216,20 +224,23 @@ When set to include matches, only those whose length exceeds this value will be 
 
 Searches for all the items whose keys (fuzzy) match the pattern.
 
-**`set(/*list*/)`**
+---
+
+**`setCollection($list)`**
 
 ```php
 /*
-@param {array} $list
-@return {array} The newly set list
+@param {array}  $list The new data to use
+@return {array}       The provided $list
 */
 ```
 
 Sets a new list of data for Fuse to match against.
 
+
 ## Weighted Search
 
-In some cases you may want certain keys to be weighted differently:
+In some cases you may want certain keys to be weighted differently for more accurate results. You may provide each key with a custom `weight` (where `0 < weight <= 1`):
 
 ```php
 $fuse = new \Fuse\Fuse($books, [
@@ -246,8 +257,9 @@ $fuse = new \Fuse\Fuse($books, [
 ]);
 ```
 
-Where `0 < weight <= 1`.
 
 ## Contributing
 
 Before submitting a pull request, please add relevant [unit tests](https://phpunit.de/) to the `test` folder.
+
+Please note that I'm striving for feature parity with the original Fuse.js and therefore won't add own features beyond bug fixes.
