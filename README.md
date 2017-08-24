@@ -22,6 +22,7 @@ This package is available via Composer. To add it to your project, just run:
 
 `composer require loilo/fuse`
 
+Note that, as of Version 3.0.5, at least PHP 7.0 is required to run this library.
 
 ## Usage
 
