@@ -6,7 +6,7 @@ This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) proje
 
 > Latest compatible Fuse.js version: 3.0.5
 
-For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/)
+For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/).
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -20,9 +20,13 @@ For an approximate demonstration of what this library can do, check out their [d
 
 This package is available via Composer. To add it to your project, just run:
 
-`composer require loilo/fuse`
+```bash
+composer require loilo/fuse
+```
 
-Note that, as of Version 3.0.5, at least PHP 7.0 is required to run this library.
+> **Note 1:** As of Version 3.0.5, at least PHP 7.0 is required to run this library.
+
+> **Note 2:** Be aware that this package has the same major and minor version as the Fuse.js original. However, the patch version numbers may differ since this repository may need additional fixes from time to time.
 
 ## Usage
 
