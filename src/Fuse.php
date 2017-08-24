@@ -1,263 +1,400 @@
-# Fuse
-
-*A fuzzy search library for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
-
-This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) project and provides 100% API compatibility.
-
-> Latest compatible Fuse.js version: 3.0.5
-
-For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/)
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Options](#options)
-- [Methods](#methods)
-- [Weighted Search](#weighted-search)
-- [Contributing](#contributing)
-
-
-## Installation
-
-This package is available via Composer. To add it to your project, just run:
-
-`composer require loilo/fuse`
-
-
-## Usage
-
-```php
-<?php
-require_once 'vendor/autoload.php';
-
-$fuse = new \Fuse\Fuse([
-    [
-        "title" => "Old Man's War",
-        "author" => "John Scalzi"
-    ],
-    [
-        "title" => "The Lock Artist",
-        "author" => "Steve Hamilton"
-    ],
-    [
-        "title" => "HTML5",
-        "author" => "Remy Sharp"
-    ],
-    [
-        "title" => "Right Ho Jeeves",
-        "author" => "P.D Woodhouse"
-    ],
-], [
-    "keys" => [ "title", "author" ],
-]);
-
-$fuse->search('hamil');
-
-/*
-Result:
-[
-    [
-        "title" => "The Lock Artist"
-        "author" => "Steve Hamilton"
-    ],
-    [
-        "title" => "HTML5"
-        "author" => "Remy Sharp"
-    ]
-]
-*/
-```
-
-
-## Options
-
-**keys** (*type*: `array`, *default:* `[]`)
-
-List of properties that will be searched. This supports nested properties, weighted search, searching in arrays of strings and associative arrays etc:
-
-```php
-$books = [
-  [
-    "title" => "Old Man's War",
-    "author" => [
-      "firstName" => "John",
-      "lastName" => "Scalzi"
-    ]
-  ]
-];
-$fuse = new \Fuse\Fuse($books, [
-  "keys" => [ "title", "author.firstName" ]
-]);
-```
-
----
-
-**id** (*type*: `string`, *default:* `null`)
-
-The name of the identifier property. If specified, the returned result will be a list of the items' identifiers, otherwise it will be a list of the items.
-
----
-
-**caseSensitive** (*type*: `bool`, *default*: `false`)
-
-Indicates whether comparisons should be case sensitive.
-
----
-
-**includeScore** (*type*: `bool`, *default*: `false`)
-
-Whether the score should be included in the result set. A score of `0` indicates a perfect match, while a score of `1` indicates a complete mismatch.
-
----
-
-**includeMatches** (*type*: `bool`, *default*: `false`)
-
-Whether the matches should be included in the result set. When true, each record in the result set will include the indices of the matched characters: `"indices" => [ $start, $end ]`. These can consequently be used for highlighting purposes.
-
----
-
-**shouldSort** (*type*: `bool`, *default*: `true`)
-
-Whether to sort the result list, by score.
-
----
-
-**getFn** (*type*: `function`, *default*: `\Fuse\Helpers\deep_value`)
-
-The get function to use when fetching an associative array's properties. The default will search nested paths like `foo.bar.baz`.
-
-```php
-/*
- * @param {array|object} $data The object or associative array being searched
- * @param {string}       $path The path to the target property
- */
-
-'getFn' => function ($data, $path) {
-    // Example using a ->get() method on objects and simple index access on arrays
-    return is_object($data)
-        ? $data->get($path)
-        : $data[$path];
-}
-```
----
-
-**sortFn** (*type*: `function`, *default*: sort by score)
-
-The function that is used for sorting the result list.
-
----
-
-**location** (*type*: `int`, *default*: `0`)
-
-Determines approximately where in the text is the pattern expected to be found.
-
----
-
-**threshold** (*type*: `float`, *default*: `0.6`)
-
-At what point does the match algorithm give up. A threshold of `0.0` requires a perfect match (of both letters and location), a threshold of `1.0` would match anything.
-
----
-
-**distance** (*type*: `int`, *default*: `100`)
-
-Determines how close the match must be to the fuzzy location (specified by `location`). An exact letter match which is `distance` characters away from the fuzzy location would score as a complete mismatch. A `distance` of `0` requires the match be at the exact `location` specified, a `distance` of `1000` would require a perfect match to be within 800 characters of the `location` to be found using a `threshold` of `0.8`.
-
----
-
-**maxPatternLength** (*type*: `int`, *default*: `32`)
-
-The maximum length of the search pattern. The longer the pattern, the more intensive the search operation will be.  Whenever the pattern exceeds the `maxPatternLength`, an error will be thrown.  Why is this important? Read [this](http://en.wikipedia.org/wiki/Word_(computer_architecture)#Word_size_choice).
-
----
-
-**verbose** (*type*: `bool`, *default*: `false`)
-
-Will print out steps. Useful for debugging.
-
----
-
-**tokenize** (*type*: `bool`, *default*: `false`)
-
-When true, the search algorithm will search individual words **and** the full string, computing the final score as a function of both. Note that when `tokenize` is `true`, the `threshold`, `distance`, and `location` are inconsequential for individual tokens.
-
----
-
-**tokenSeparator** (*type*: `string`, *default*: `/ +/g`)
-
-A regular expression string used to separate words of the search pattern when searching. Only applicable when `tokenize` is `true`.
-
----
-
-**matchAllTokens** (*type*: `bool`, *default*: `false`)
-
-When `true`, the result set will only include records that match all tokens. Will only work if `tokenize` is also true.
-
----
-
-**findAllMatches** (*type*: `bool`, *default*: `false`)
-
-When `true`, the matching function will continue to the end of a search pattern even if a perfect match has already been located in the string.
-
----
-
-**minMatchCharLength** (*type*: `int`, *default*: `1`)
-
-When set to include matches, only those whose length exceeds this value will be returned. (For instance, if you want to ignore single character index returns, set to `2`)
-
-
-## Methods
-
-The following methods are available on a `Fuse\Fuse` instance:
-
----
-
-**`search($pattern)`**
-
-```php
-/*
-@param {string} $pattern The pattern string to fuzzy search on.
-@return {array} A list of all search matches.
-*/
-```
-
-Searches for all the items whose keys (fuzzy) match the pattern.
-
----
-
-**`setCollection($list)`**
-
-```php
-/*
-@param {array}  $list The new data to use
-@return {array}       The provided $list
-*/
-```
-
-Sets a new list of data for Fuse to match against.
-
-
-## Weighted Search
-
-In some cases you may want certain keys to be weighted differently for more accurate results. You may provide each key with a custom `weight` (where `0 < weight <= 1`):
-
-```php
-$fuse = new \Fuse\Fuse($books, [
-    "keys" => [
-        [
-            "name" => "title",
-            "weight" => 0.3
+<?php namespace Fuse;
+
+use Fuse\Bitap\Bitap;
+use function Fuse\Helpers\deep_value;
+use function Fuse\Helpers\is_list;
+
+class Fuse {
+  public $options;
+
+  public function __construct ($list, $options = []) {
+    $this->options = array_merge([
+      'location' => 0,
+      'distance' => 100,
+      'threshold' => 0.6,
+      'maxPatternLength' => 32,
+      'caseSensitive' => false,
+      'tokenSeparator' => ' +',
+      'findAllMatches' => false,
+      'minMatchCharLength' => 1,
+      'id' => null,
+      'keys' => [],
+      'shouldSort' => true,
+      'getFn' => '\Fuse\Helpers\deep_value',
+      'sortFn' => function ($a, $b) { return $a['score'] <=> $b['score']; },
+      'tokenize' => false,
+      'matchAllTokens' => false,
+      'includeMatches' => false,
+      'includeScore' => false,
+      'verbose' => false
+    ], $options);
+    $this->options['isCaseSensitive'] = $this->options['caseSensitive'];
+
+    $this->setCollection($list);
+  }
+
+  public function setCollection ($list) {
+    $this->list = $list;
+    return $list;
+  }
+
+  public function search ($pattern) {
+    $this->log("---------\nSearch pattern: \"$pattern\"");
+
+    $searchers = $this->prepareSearchers($pattern);
+
+    $search = $this->innerSearch($searchers['tokenSearchers'], $searchers['fullSearcher']);
+
+    $this->computeScore($search['weights'], $search['results']);
+
+    if ($this->options['shouldSort']) {
+      $this->sort($search['results']);
+    }
+
+    return $this->format($search['results']);
+  }
+
+  protected function prepareSearchers ($pattern = '') {
+    $tokenSearchers = [];
+
+    if ($this->options['tokenize']) {
+      // Tokenize on the separator
+      $tokens = mb_split($this->options['tokenSeparator'], $pattern);
+
+      for ($i = 0, $len = sizeof($tokens); $i < $len; $i++) {
+        $tokenSearchers[] = new Bitap($tokens[$i], $this->options);
+      }
+    }
+
+    $fullSearcher = new Bitap($pattern, $this->options);
+
+    return [
+      'tokenSearchers' => $tokenSearchers,
+      'fullSearcher' => $fullSearcher
+    ];
+  }
+
+  protected function innerSearch ($tokenSearchers = [], $fullSearcher = null) {
+    $list = $this->list;
+    $resultMap = [];
+    $results = [];
+
+    // Check the first item in the list, if it's a string, then we assume
+    // that every item in the list is also a string, and thus it's a flattened array.
+    if (is_string($list[0])) {
+      // Iterate over every item
+      for ($i = 0, $len = sizeof($list); $i < $len; $i++) {
+        $this->analyze([
+          'key' => '',
+          'value' => $list[$i],
+          'record' => $i,
+          'index' => $i
         ],
-        [
-            "name" => "author",
-            "weight" => 0.7
-        ]
-    ]
-]);
-```
+        $resultMap,
+        $results,
+        $tokenSearchers,
+        $fullSearcher
+        );
+      }
 
+      return [
+        'weights' => null,
+        'results' => $results
+      ];
+    }
 
-## Contributing
+    // Otherwise, the first item is an Object (hopefully), and thus the searching
+    // is done on the values of the keys of each item.
+    $weights = [];
+    for ($i = 0, $len = sizeof($list); $i < $len; $i++) {
+      $item = $list[$i];
+      // Iterate over every key
+      for ($j = 0, $keysLen = sizeof($this->options['keys']); $j < $keysLen; $j++) {
+        $key = $this->options['keys'][$j];
+        if (!is_string($key)) {
+          $weights[$key['name']] = [
+            'weight' => (1 - $key['weight']) ?: 1
+          ];
+          if ($key['weight'] <= 0 || $key['weight'] > 1) {
+            throw new \LogicException('Key weight has to be > 0 and <= 1');
+          }
+          $key = $key['name'];
+        } else {
+          $weights[$key] = [
+            'weight' => 1
+          ];
+        }
 
-Before submitting a pull request, please add relevant [unit tests](https://phpunit.de/) to the `test` folder.
+        $this->analyze([
+          'key' => $key,
+          'value' => $this->options['getFn']($item, $key),
+          'record' => $item,
+          'index' => $i
+        ],
+        $resultMap,
+        $results,
+        $tokenSearchers,
+        $fullSearcher
+        );
+      }
+    }
 
-Please note that I'm striving for feature parity with the original Fuse.js and therefore won't add own features beyond bug fixes.
+    return [
+      'weights' => $weights,
+      'results' => $results
+    ];
+  }
+
+  protected function analyze ($query = [], &$resultMap = [], &$results = [], &$tokenSearchers = [], &$fullSearcher = null) {
+    $query = array_merge([
+      'key' => null,
+      'arrayIndex' => -1,
+      'value' => null,
+      'record' => null,
+      'index' => null
+    ], $query);
+
+    // Check if the texvaluet can be searched
+    if (is_null($query['value'])) {
+      return;
+    }
+
+    $exists = false;
+    $averageScore = -1;
+    $numTextMatches = 0;
+
+    if (is_string($query['value'])) {
+      $this->log("\nKey: " . ($query['key'] === '' ? '-' : $query['key']));
+
+      $mainSearchResult = $fullSearcher->search($query['value']);
+      $this->log('Full text: "' . $query['value'] . '", score: ' . $mainSearchResult['score']);
+
+      if ($this->options['tokenize']) {
+        $words = mb_split($this->options['tokenSeparator'], $query['value']);
+        $scores = [];
+
+        for ($i = 0; $i < sizeof($tokenSearchers); $i++) {
+          $tokenSearcher = $tokenSearchers[$i];
+
+          $this->log("\nPattern: \"{$tokenSearcher->pattern}\"");
+
+          // $tokenScores = []
+          $hasMatchInText = false;
+
+          for ($j = 0; $j < sizeof($words); $j++) {
+            $word = $words[$j];
+            $tokenSearchResult = $tokenSearcher->search($word);
+            $obj = [];
+            if ($tokenSearchResult['isMatch']) {
+              $obj[$word] = $tokenSearchResult['score'];
+              $exists = true;
+              $hasMatchInText = true;
+              $scores[] = $tokenSearchResult['score'];
+            } else {
+              $obj[$word] = 1;
+              if (!$this->options['matchAllTokens']) {
+                $scores[] = 1;
+              }
+            }
+            $this->log('Token: "' . $word . '", score: ' . $obj[$word]);
+            // tokenScores.push(obj)
+          }
+
+          if ($hasMatchInText) {
+            $numTextMatches += 1;
+          }
+        }
+
+        $averageScore = $scores[0];
+        $scoresLen = sizeof($scores);
+        for ($i = 1; $i < $scoresLen; $i++) {
+          $averageScore += $scores[$i];
+        }
+        $averageScore = $averageScore / $scoresLen;
+
+        $this->log('Token score average: ', $averageScore);
+      }
+
+      $finalScore = $mainSearchResult['score'];
+      if ($averageScore > -1) {
+        $finalScore = ($finalScore + $averageScore) / 2;
+      }
+
+      $this->log('Score average: ', $finalScore);
+
+      $checkTextMatches = ($this->options['tokenize'] && $this->options['matchAllTokens'])
+        ? $numTextMatches >= sizeof($tokenSearchers)
+        : true;
+
+      $this->log("\nCheck Matches: ", $checkTextMatches);
+
+      // If a match is found, add the item to <rawResults>, including its score
+      if (($exists || $mainSearchResult['isMatch']) && $checkTextMatches) {
+        // Check if the item already exists in our results
+        $existingResult = &$resultMap[$query['index']] ?? null;
+
+        if (!is_null($existingResult)) {
+          // Use the lowest score
+          // existingResult.score, bitapResult.score
+          $existingResult['output'][] = [
+            'key' => $query['key'],
+            'arrayIndex' => $query['arrayIndex'],
+            'value' => $query['value'],
+            'score' => $finalScore,
+            'matchedIndices' => $mainSearchResult['matchedIndices']
+          ];
+        } else {
+          // Add it to the raw result list
+          $resultMap[$query['index']] = [
+            'item' => $query['record'],
+            'output' => [[
+              'key' => $query['key'],
+              'arrayIndex' => $query['arrayIndex'],
+              'value' => $query['value'],
+              'score' => $finalScore,
+              'matchedIndices' => $mainSearchResult['matchedIndices']
+            ]]
+          ];
+
+          $results[] = &$resultMap[$query['index']];
+        }
+      }
+    } elseif (is_list($query['value'])) {
+      for ($i = 0, $len = sizeof($query['value']); $i < $len; $i++) {
+        $this->analyze([
+          'key' => $query['key'],
+          'arrayIndex' => $i,
+          'value' => $query['value'][$i],
+          'record' => $query['record'],
+          'index' => $query['index']
+        ],
+        $resultMap,
+        $results,
+        $tokenSearchers,
+        $fullSearcher
+        );
+      }
+    }
+  }
+
+  protected function computeScore ($weights, &$results) {
+    $this->log("\n\nComputing score:\n");
+
+    for ($i = 0, $len = sizeof($results); $i < $len; $i++) {
+      $result = &$results[$i];
+      $output = $result['output'];
+      $scoreLen = sizeof($output);
+
+      $totalScore = 0;
+      $bestScore = 1;
+
+      for ($j = 0; $j < $scoreLen; $j++) {
+        $score = $output[$j]['score'];
+        $weight = $weights
+          ? $weights[$output[$j]['key']]['weight']
+          : 1;
+        $nScore = $score * $weight;
+
+        if ($weight !== 1) {
+          $bestScore = min($bestScore, $nScore);
+        } else {
+          $output[$j]['nScore'] = $nScore;
+          $totalScore += $nScore;
+        }
+      }
+
+      $result['score'] = $bestScore == 1
+        ? $totalScore / $scoreLen
+        : $bestScore;
+
+      $this->log($result);
+    }
+  }
+
+  protected function sort (&$results) {
+    $this->log("\n\nSorting....");
+    usort($results, $this->options['sortFn']);
+  }
+
+  protected function format (&$results) {
+    $finalOutput = [];
+
+    $this->log("\n\nOutput:\n\n", $results);
+
+    $transformers = [];
+
+    if ($this->options['includeMatches']) {
+      $transformers[] = function ($result, &$data) {
+        $output = $result['output'];
+        $data['matches'] = [];
+
+        for ($i = 0, $len = sizeof($output); $i < $len; $i++) {
+          $item = $output[$i];
+
+          if (sizeof($item['matchedIndices']) === 0) {
+            continue;
+          }
+
+          $obj = [
+            'indices' => $item['matchedIndices'],
+            'value' => $item['value']
+          ];
+          if ($item['key']) {
+            $obj['key'] = $item['key'];
+          }
+          if (isset($item['arrayIndex']) && $item['arrayIndex'] > -1) {
+            $obj['arrayIndex'] = $item['arrayIndex'];
+          }
+          $data['matches'][] = $obj;
+        }
+      };
+    }
+
+    if ($this->options['includeScore']) {
+      $transformers[] = function($result, &$data) {
+        $data['score'] = $result['score'];
+      };
+    }
+
+    for ($i = 0, $len = sizeof($results); $i < $len; $i += 1) {
+      $result = &$results[$i];
+
+      if ($this->options['id']) {
+        $getterResult = $this->options['getFn']($result['item'], $this->options['id']);
+        $result['item'] = $getterResult[0];
+      }
+
+      if (!sizeof($transformers)) {
+        $finalOutput[] = $result['item'];
+        continue;
+      }
+
+      $data = [
+        'item' => $result['item']
+      ];
+
+      for ($j = 0, $tlen = sizeof($transformers); $j < $tlen; $j++) {
+        $transformers[$j]($result, $data);
+      }
+
+      $finalOutput[] = $data;
+    }
+
+    return $finalOutput;
+  }
+
+  protected function log (...$args) {
+    if ($this->options['verbose']) {
+      echo "\n";
+      foreach ($args as $arg) {
+        if (is_array($arg) || is_object($arg)) {
+          var_dump($arg);
+        } elseif (is_bool($arg)) {
+          echo ($arg ? 'true' : 'false');
+        } else {
+          echo $arg;
+        }
+      }
+    }
+  }
+}
