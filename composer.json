@@ -2,7 +2,7 @@
     "name": "loilo/fuse",
     "description": "Fuzzy search for PHP based on Bitap algorithm",
     "type": "library",
-    "version": "2.6.2",
+    "version": "3.0.5",
     "license": "Apache-2.0",
     "authors": [
         {
@@ -19,6 +19,15 @@
     "autoload": {
         "psr-4": {
             "Fuse\\": "src/"
-        }
+        },
+        "files": [
+            "src/Bitap/matched_indices.php",
+            "src/Bitap/pattern_alphabet.php",
+            "src/Bitap/regex_search.php",
+            "src/Bitap/score.php",
+            "src/Bitap/search.php",
+            "src/Helpers/deep_value.php",
+            "src/Helpers/is_list.php"
+        ]
     }
 }
