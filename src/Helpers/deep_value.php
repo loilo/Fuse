@@ -19,7 +19,7 @@ function deep_value($assoc, $path, &$list = [])
 
         if (!is_null($value)) {
             if (!$remaining && (is_string($value) || is_int($value) || is_float($value))) {
-                $list[] = $value;
+                $list[] = (string) $value;
             } elseif (is_list($value)) {
                 // Search each item in the array.
                 for ($i = 0, $len = sizeof($value); $i < $len; $i++) {

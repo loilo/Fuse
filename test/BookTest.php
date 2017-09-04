@@ -81,6 +81,12 @@ class BookTest extends TestCase
             ]
         ], [
             'title' => 'HTML5',
+        ], [
+            'title' => 'A History of England',
+            'author' => [
+              'firstName' => 1066,
+              'lastName' => 'Hastings'
+            ]
         ]];
 
         $options = [ 'keys' => ['title', 'author.firstName'] ];
@@ -99,6 +105,21 @@ class BookTest extends TestCase
           'author' => [
             'firstName' => 'Steve',
             'lastName' => 'Hamilton'
+          ]
+        ], $result[0]);
+
+        // When searching for the term "106"...
+        $result = $fuse->search('106');
+
+        // ...we get a list of exactly 1 item...
+        $this->assertCount(1, $result);
+
+        // ...whose first value is found
+        $this->assertEquals([
+          'title' => 'A History of England',
+          'author' => [
+            'firstName' => 1066,
+            'lastName' => 'Hastings'
           ]
         ], $result[0]);
     }
