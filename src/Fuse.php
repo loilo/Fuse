@@ -289,10 +289,12 @@ class Fuse {
       $bestScore = 1;
 
       for ($j = 0; $j < $scoreLen; $j++) {
-        $score = $output[$j]['score'];
         $weight = $weights
           ? $weights[$output[$j]['key']]['weight']
           : 1;
+        $score = $weight === 1
+          ? $output[$j]['score']
+          : ($output[$j]['score'] ?: 0.001);
         $nScore = $score * $weight;
 
         if ($weight !== 1) {
