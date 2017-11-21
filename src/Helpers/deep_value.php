@@ -15,7 +15,9 @@ function deep_value($assoc, $path, &$list = [])
             $remaining = mb_substr($path, $dotIndex + 1);
         }
 
-        $value = $assoc[$firstSegment] ?? null;
+        $value = isset($assoc[$firstSegment])
+            ? $assoc[$firstSegment]
+            : null;
 
         if (!is_null($value)) {
             if (!$remaining && (is_string($value) || is_int($value) || is_float($value))) {

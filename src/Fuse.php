@@ -21,7 +21,20 @@ class Fuse {
       'keys' => [],
       'shouldSort' => true,
       'getFn' => '\Fuse\Helpers\deep_value',
-      'sortFn' => function ($a, $b) { return $a['score'] <=> $b['score']; },
+      'sortFn' => function ($a, $b) {
+        if ($a['score'] === $b['score']) {
+            return $a['index'] === $b['index']
+                ? 0
+                : ($a['index'] < $b['index']
+                    ? -1
+                    : 1
+                );
+        } elseif ($a['score'] < $b['score']) {
+            return -1;
+        } else {
+            return 1;
+        }
+      },
       'tokenize' => false,
       'matchAllTokens' => false,
       'includeMatches' => false,
@@ -231,7 +244,11 @@ class Fuse {
       // If a match is found, add the item to <rawResults>, including its score
       if (($exists || $mainSearchResult['isMatch']) && $checkTextMatches) {
         // Check if the item already exists in our results
-        $existingResult = &$resultMap[$query['index']] ?? null;
+        if (isset($resultMap[$query['index']])) {
+          $existingResult = &$resultMap[$query['index']];
+        } else {
+          $existingResult = null;
+        }
 
         if (!is_null($existingResult)) {
           // Use the lowest score
@@ -315,7 +332,18 @@ class Fuse {
 
   protected function sort (&$results) {
     $this->log("\n\nSorting....");
+
+    $results = array_map(function ($result, $index) {
+        $result['index'] = $index;
+        return $result;
+    }, array_values($results), array_keys($results));
+
     usort($results, $this->options['sortFn']);
+
+    $results = array_map(function ($result) {
+        unset($result['index']);
+        return $result;
+    }, $results);
   }
 
   protected function format (&$results) {

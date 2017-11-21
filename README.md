@@ -24,9 +24,7 @@ This package is available via Composer. To add it to your project, just run:
 composer require loilo/fuse
 ```
 
-> **Note 1:** As of Version 3.0.5, at least PHP 7.0 is required to run this library.
-
-> **Note 2:** Be aware that this package has the same major and minor version as the Fuse.js original. However, the patch version numbers may differ since this repository may need additional fixes from time to time.
+> **Note:** Be aware that this package has the same major and minor version as the Fuse.js original. However, the patch version numbers may differ since this repository may need additional fixes from time to time.
 
 ## Usage
 

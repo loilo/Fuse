@@ -97,7 +97,11 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
         for ($j = $finish; $j >= $start; $j -= 1) {
             $currentLocation = $j - 1;
-            $charMatch = $patternAlphabet[mb_substr($text, $currentLocation, 1)] ?? null;
+
+            $offset = mb_substr($text, $currentLocation, 1);
+            $charMatch = isset($patternAlphabet[$offset])
+                ? $patternAlphabet[$offset]
+                : null;
 
             if ($charMatch) {
                 $matchMask[$currentLocation] = 1;
