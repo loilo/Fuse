@@ -21,7 +21,7 @@ function matched_indices($matchmask = [], $minMatchCharLength = 1)
     }
 
     // (i-1 - start) + 1 => i - start
-    if ($matchmask[$i - 1] && ($i - $start) >= $minMatchCharLength) {
+    if (isset($matchmask[$i - 1]) && $matchmask[$i - 1] && ($i - $start) >= $minMatchCharLength) {
         $matchedIndices[] = [ $start, $i - 1 ];
     }
 
