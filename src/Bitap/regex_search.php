@@ -2,7 +2,7 @@
 
 function regex_search($text, $pattern, $tokenSeparator = ' +')
 {
-    $regex = '/' . preg_replace('/' . str_replace('/', '\\/', $tokenSeparator) . '/', '|', preg_quote($pattern)) . '/';
+    $regex = '/' . preg_replace('/' . str_replace('/', '\\/', $tokenSeparator) . '/', '|', str_replace('/', '\\/', preg_quote($pattern))) . '/';
 
     $isMatch = (bool) preg_match($regex, $text, $matches);
     $matchedIndices = [];
@@ -15,8 +15,8 @@ function regex_search($text, $pattern, $tokenSeparator = ' +')
     }
 
     return [
-    'score' => $isMatch ? 0.5 : 1,
-    'isMatch' => $isMatch,
-    'matchedIndices' => $matchedIndices
-  ];
+        'score' => $isMatch ? 0.5 : 1,
+        'isMatch' => $isMatch,
+        'matchedIndices' => $matchedIndices
+    ];
 }
