@@ -1,7 +1,7 @@
 language: php
 
-script:
-  - vendor/bin/phpunit test
+before_script: composer install
+script: vendor/bin/phpunit test
 
 php:
   - 5.6
