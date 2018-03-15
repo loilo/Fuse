@@ -1,4 +1,5 @@
 # Fuse
+[![Travis](https://img.shields.io/travis/Loilo/Fuse.svg)](https://travis-ci.org/Loilo/Fuse) [![Packagist](https://img.shields.io/packagist/v/loilo/fuse.svg)](https://packagist.org/packages/loilo/fuse)
 
 *A fuzzy search library for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
 
