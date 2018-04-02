@@ -223,7 +223,9 @@ class Fuse {
         for ($i = 1; $i < $scoresLen; $i++) {
           $averageScore += $scores[$i];
         }
-        $averageScore = $averageScore / $scoresLen;
+        $averageScore = $scoresLen > 0
+          ? $averageScore / $scoresLen
+          : -1;
 
         $this->log('Token score average: ', $averageScore);
       }
