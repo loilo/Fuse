@@ -1,5 +1,5 @@
 # Fuse
-[![Travis](https://img.shields.io/travis/Loilo/Fuse.svg)](https://travis-ci.org/Loilo/Fuse) [![Packagist](https://img.shields.io/packagist/v/loilo/fuse.svg)](https://packagist.org/packages/loilo/fuse)
+[![Travis](https://img.shields.io/travis/Loilo/Fuse.svg?label=unix&logo=travis)](https://travis-ci.org/Loilo/Fuse) [![AppVeyor](https://img.shields.io/appveyor/ci/Loilo/Fuse.svg?label=windows&logo=appveyor)](https://ci.appveyor.com/project/Loilo/fuse) [![Packagist](https://img.shields.io/packagist/v/loilo/fuse.svg)](https://packagist.org/packages/loilo/fuse)
 
 *A fuzzy search library for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
 
