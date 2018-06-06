@@ -3,12 +3,12 @@
 function search($text, $pattern, $patternAlphabet, $options = [])
 {
     $options = array_merge([
-    'location' => 0,
-    'distance' => 100,
-    'threshold' => 0.6,
-    'findAllMatches' => false,
-    'minMatchCharLength' => 1
-  ], $options);
+        'location' => 0,
+        'distance' => 100,
+        'threshold' => 0.6,
+        'findAllMatches' => false,
+        'minMatchCharLength' => 1
+    ], $options);
 
     $expectedLocation  = $options['location'];
     // Set starting location at beginning text and initialize the alphabet.
@@ -28,11 +28,11 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
     if ($bestLocation !== false) {
         $score = score($pattern, [
-      'errors' => 0,
-      'currentLocation' => $bestLocation,
-      'expectedLocation' => $expectedLocation,
-      'distance' => $options['distance']
-    ]);
+            'errors' => 0,
+            'currentLocation' => $bestLocation,
+            'expectedLocation' => $expectedLocation,
+            'distance' => $options['distance']
+        ]);
         $currentThreshold = min($score, $currentThreshold);
 
         // What about in the other direction? (speed up)
@@ -40,11 +40,11 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
         if ($bestLocation !== false) {
             $score = score($pattern, [
-        'errors' => 0,
-        'currentLocation' => $bestLocation,
-        'expectedLocation' => $expectedLocation,
-        'distance' => $options['distance']
-      ]);
+                'errors' => 0,
+                'currentLocation' => $bestLocation,
+                'expectedLocation' => $expectedLocation,
+                'distance' => $options['distance']
+            ]);
             $currentThreshold = min($score, $currentThreshold);
         }
     }
@@ -67,11 +67,11 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
         while ($binMin < $binMid) {
             $score = score($pattern, [
-        'errors' => $i,
-        'currentLocation' => $expectedLocation + $binMid,
-        'expectedLocation' => $expectedLocation,
-        'distance' => $options['distance']
-      ]);
+                'errors' => $i,
+                'currentLocation' => $expectedLocation + $binMid,
+                'expectedLocation' => $expectedLocation,
+                'distance' => $options['distance']
+            ]);
 
             if ($score <= $currentThreshold) {
                 $binMin = $binMid;
@@ -87,8 +87,8 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
         $start = max(1, $expectedLocation - $binMid + 1);
         $finish = $options['findAllMatches']
-      ? $textLen
-      : min($expectedLocation + $binMid, $textLen) + $patternLen;
+            ? $textLen
+            : min($expectedLocation + $binMid, $textLen) + $patternLen;
 
         // Initialize the bit array
         $bitArr = [];
@@ -117,11 +117,11 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
             if ($bitArr[$j] & $mask) {
                 $finalScore = score($pattern, [
-          'errors' => $i,
-          'currentLocation' => $currentLocation,
-          'expectedLocation' => $expectedLocation,
-          'distance' => $options['distance']
-        ]);
+                    'errors' => $i,
+                    'currentLocation' => $currentLocation,
+                    'expectedLocation' => $expectedLocation,
+                    'distance' => $options['distance']
+                ]);
 
                 // This match will almost certainly be better than any existing match.
                 // But check anyway.
@@ -143,11 +143,11 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
         // No hope for a (better) match at greater error levels.
         $score = score($pattern, [
-      'errors' => $i + 1,
-      'currentLocation' => $expectedLocation,
-      'expectedLocation' => $expectedLocation,
-      'distance' => $options['distance']
-    ]);
+            'errors' => $i + 1,
+            'currentLocation' => $expectedLocation,
+            'expectedLocation' => $expectedLocation,
+            'distance' => $options['distance']
+        ]);
 
         if ($score > $currentThreshold) {
             break;
@@ -158,8 +158,8 @@ function search($text, $pattern, $patternAlphabet, $options = [])
 
     // Count exact matches (those with a score of 0) to be "almost" exact
     return [
-    'isMatch' => $bestLocation >= 0,
-    'score' => $finalScore == 0 ? 0.001 : $finalScore,
-    'matchedIndices' => matched_indices($matchMask, $options['minMatchCharLength'])
-  ];
+        'isMatch' => $bestLocation >= 0,
+        'score' => $finalScore == 0 ? 0.001 : $finalScore,
+        'matchedIndices' => matched_indices($matchMask, $options['minMatchCharLength'])
+    ];
 }
