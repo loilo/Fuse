@@ -304,7 +304,7 @@ class Fuse {
       $output = $result['output'];
       $scoreLen = sizeof($output);
 
-      $totalScore = 0;
+      $currScore = 1;
       $bestScore = 1;
 
       for ($j = 0; $j < $scoreLen; $j++) {
@@ -320,12 +320,12 @@ class Fuse {
           $bestScore = min($bestScore, $nScore);
         } else {
           $output[$j]['nScore'] = $nScore;
-          $totalScore += $nScore;
+          $currScore *= $nScore;
         }
       }
 
       $result['score'] = $bestScore == 1
-        ? $totalScore / $scoreLen
+        ? $currScore
         : $bestScore;
 
       $this->log($result);
