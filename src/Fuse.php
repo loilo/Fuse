@@ -228,14 +228,17 @@ class Fuse
                     }
                 }
 
-                $averageScore = $scores[0];
                 $scoresLen = sizeof($scores);
-                for ($i = 1; $i < $scoresLen; $i++) {
-                    $averageScore += $scores[$i];
+
+                if ($scoresLen > 0) {
+                    $averageScore = $scores[0];
+                    for ($i = 1; $i < $scoresLen; $i++) {
+                        $averageScore += $scores[$i];
+                    }
+                    $averageScore = $averageScore / $scoresLen;
+                } else {
+                    $averageScore = -1;
                 }
-                $averageScore = $scoresLen > 0
-                    ? $averageScore / $scoresLen
-                    : -1;
 
                 $this->log('Token score average: ', $averageScore);
             }
