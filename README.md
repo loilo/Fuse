@@ -5,7 +5,7 @@
 
 This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) project and provides 100% API compatibility.
 
-> Latest compatible Fuse.js version: 3.2.1
+> Latest compatible Fuse.js version: 3.3.0
 
 For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/).
 
