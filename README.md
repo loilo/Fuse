@@ -7,6 +7,14 @@ This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) proje
 
 > Latest compatible Fuse.js version: 3.3.0
 
+---
+
+Maintaining Fuse does take a significant amount of time. Not primarily for me, but for [Kirollos](https://github.com/krisk), who maintains the JavaScript library Fuse is ported from and does all the heavy lifting.
+
+If you get value out of this library and want it to improve, please consider [supporting Fuse.js](https://github.com/krisk/Fuse#supporting-fusejs).
+
+---
+
 For an approximate demonstration of what this library can do, check out their [demo & usage](http://fusejs.io/).
 
 - [Installation](#installation)
