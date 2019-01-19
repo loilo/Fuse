@@ -51,6 +51,7 @@ class Fuse
 
     public function setCollection($list)
     {
+        $list = array_values($list);
         $this->list = $list;
         return $list;
     }
