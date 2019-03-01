@@ -56,7 +56,7 @@ class Fuse
         return $list;
     }
 
-    public function search($pattern)
+    public function search($pattern, $opts = [ 'limit' => false ])
     {
         $this->log("---------\nSearch pattern: \"$pattern\"");
 
@@ -68,6 +68,10 @@ class Fuse
 
         if ($this->options['shouldSort']) {
             $this->sort($search['results']);
+        }
+
+        if (is_int($opts['limit'])) {
+            $search['results'] = array_slice($search['results'], 0, $opts['limit']);
         }
 
         return $this->format($search['results']);

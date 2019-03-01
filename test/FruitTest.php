@@ -50,4 +50,16 @@ class FruitTest extends TestCase
         $this->assertEquals(2, $result[0]);
         $this->assertEquals(1, $result[1]);
     }
+
+    // Searching for "nan" with a limit of 1 we expect...
+    public function testFuzzySearchNanLimited()
+    {
+        $result = static::$fuse->search('nan', [ 'limit' => 1 ]);
+
+        // ...a list containing 1 items
+        $this->assertCount(1, $result);
+
+        // ...whose values represent the index of "Banana"
+        $this->assertEquals(2, $result[0]);
+    }
 }
