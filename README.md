@@ -9,7 +9,7 @@ This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) proje
 
 ---
 
-Maintaining Fuse does take a significant amount of time. Not primarily for me, but for [Kirollos](https://github.com/krisk), who maintains the JavaScript library Fuse is ported from and does all the heavy lifting.
+Maintaining Fuse does take a significant amount of time. Not primarily for me, but for [Kiro](https://github.com/krisk), who maintains the JavaScript library Fuse is ported from and does all the heavy lifting.
 
 If you get value out of this library and want it to improve, please consider [supporting Fuse.js](https://github.com/krisk/Fuse#supporting-fusejs).
 
