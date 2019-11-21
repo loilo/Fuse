@@ -11,23 +11,75 @@ class LongPatternTest extends TestCase
 
     public static function setUpBeforeClass()
     {
-        static::$fuse = new Fuse((require __DIR__ . '/fixtures/books.php'), [
-            'keys' => ['title']
+        static::$fuse = new Fuse([
+          [
+            'text' => 'pizza'
+          ],
+          [
+            'text' => 'feast'
+          ],
+          [
+            'text' => 'super+large+much+unique+36+very+wow+'
+          ]
+        ], [
+          'include' => [
+            'score',
+            'matches'
+          ],
+          'shouldSort' => true,
+          'threshold' => 0.5,
+          'location' => 0,
+          'distance' => 0,
+          'maxPatternLength' => 50,
+          'minMatchCharLength' => 4,
+          'keys' => [
+            'text'
+          ]
         ]);
     }
 
-    // When searching for the term "HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5"...
-    public function testSearchHTML5()
+    public function testFindDeliciousPizza()
     {
-        $result = static::$fuse->search('HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5 HTML5');
+        $result = static::$fuse->search('pizza');
 
-        // we get a non-empty list...
         $this->assertNotEmpty($result);
+        $this->assertSame('pizza', $result[0]['text']);
+    }
 
-        // ...whose first value is [ 'title' => 'HTML5', 'author' => 'Remy Sharp' ]
-        $this->assertEquals([
-            'title' => 'HTML5',
-            'author' => 'Remy Sharp'
-        ], $result[0]);
+    public function testFindsPizzaWhenClumsy()
+    {
+        $result = static::$fuse->search('pizze');
+
+        $this->assertNotEmpty($result);
+        $this->assertSame('pizza', $result[0]['text']);
+    }
+
+    public function testFindsNoMatchesAt31CharPattern()
+    {
+        $result = static::$fuse->search('this-string-is-exactly-31-chars');
+
+        $this->assertEmpty($result);
+    }
+
+    public function testFindsNoMatchesAt32CharPattern()
+    {
+        $result = static::$fuse->search('this-string-is-exactly-32-chars-');
+
+        $this->assertEmpty($result);
+    }
+
+    public function testFindsNoMatchesAtMoreThan32CharsPattern()
+    {
+        $result = static::$fuse->search('this-string-is-more-than-32-chars');
+
+        $this->assertEmpty($result);
+    }
+
+    public function testFindsExactMatchesAtMoreThan32CharsPattern()
+    {
+        $result = static::$fuse->search('super+large+much+unique+36+very+wow+');
+
+        $this->assertNotEmpty($result);
+        $this->assertSame('super+large+much+unique+36+very+wow+', $result[0]['text']);
     }
 }
