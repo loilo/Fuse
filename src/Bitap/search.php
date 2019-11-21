@@ -56,7 +56,7 @@ function search($text, $pattern, $patternAlphabet, $options = [])
     $finalScore = 1;
     $binMax = $patternLen + $textLen;
 
-    $mask = 1 << ($patternLen - 1);
+    $mask = 1 << min($patternLen - 1, 30);
 
     for ($i = 0; $i < $patternLen; $i++) {
         // Scan for the best match; each iteration allows for one more error.
