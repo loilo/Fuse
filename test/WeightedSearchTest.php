@@ -69,14 +69,14 @@ class WeightedSearchTest extends TestCase
     {
         $options = [
             'keys' => [[
-                'name' => 'tags',
-                'weight' => 0.8
+                'name' => 'title',
+                'weight' => 0.4
             ], [
                 'name' => 'author',
-                'weight' => 0.3
+                'weight' => 0.1
             ], [
-                'name' => 'title',
-                'weight' => 0.2
+                'name' => 'tags',
+                'weight' => 0.5
             ]]
         ];
 

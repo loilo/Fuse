@@ -31,7 +31,8 @@ class Bitap
             // match is found before the end of the same input.
             'findAllMatches' => false,
             // Minimum number of characters that must be matched before a result is considered a match
-            'minMatchCharLength' => 1
+            'minMatchCharLength' => 1,
+            'includeMatches' => false
         ], $options);
 
         $this->pattern = $this->options['isCaseSensitive']
@@ -51,14 +52,19 @@ class Bitap
 
         // Exact match
         if ($this->pattern === $text) {
-            return [
+            $result =  [
                 'isMatch' => true,
                 'score' => 0,
-                'matchedIndices' => [[0, mb_strlen($text) - 1]]
             ];
+
+            if ($this->options['includeMatches']) {
+                $result['matchedIndices'] = [[0, mb_strlen($text) - 1]];
+            }
+
+            return $result;
         }
 
-        // When pattern length is greater than the machine word length, just do a a regex comparison
+        // When pattern length is greater than the machine word length, just do a regex comparison
         if (mb_strlen($this->pattern) > $this->options['maxPatternLength']) {
             return regex_search($text, $this->pattern, $this->options['tokenSeparator']);
         }
@@ -69,7 +75,8 @@ class Bitap
             'distance' => $this->options['distance'],
             'threshold' => $this->options['threshold'],
             'findAllMatches' => $this->options['findAllMatches'],
-            'minMatchCharLength' => $this->options['minMatchCharLength']
+            'minMatchCharLength' => $this->options['minMatchCharLength'],
+            'includeMatches' => $this->options['includeMatches']
         ]);
     }
 }

@@ -7,7 +7,8 @@ function search($text, $pattern, $patternAlphabet, $options = [])
         'distance' => 100,
         'threshold' => 0.6,
         'findAllMatches' => false,
-        'minMatchCharLength' => 1
+        'minMatchCharLength' => 1,
+        'includeMatches' => false
     ], $options);
 
     $expectedLocation  = $options['location'];
@@ -157,9 +158,14 @@ function search($text, $pattern, $patternAlphabet, $options = [])
     }
 
     // Count exact matches (those with a score of 0) to be "almost" exact
-    return [
+    $result = [
         'isMatch' => $bestLocation >= 0,
-        'score' => $finalScore == 0 ? 0.001 : $finalScore,
-        'matchedIndices' => matched_indices($matchMask, $options['minMatchCharLength'])
+        'score' => $finalScore == 0 ? 0.001 : $finalScore
     ];
+
+    if ($options['includeMatches']) {
+        $result['matchedIndices'] = matched_indices($matchMask, $options['minMatchCharLength']);
+    }
+
+    return $result;
 }

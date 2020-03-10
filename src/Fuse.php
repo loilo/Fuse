@@ -6,6 +6,9 @@ use function Fuse\Helpers\is_list;
 
 class Fuse
 {
+    protected $keyWeights;
+    protected $keyNames;
+
     public $options;
 
     public function __construct($list, $options = [])
@@ -22,7 +25,7 @@ class Fuse
             'id' => null,
             'keys' => [],
             'shouldSort' => true,
-            'getFn' => '\Fuse\Helpers\deep_value',
+            'getFn' => '\Fuse\Helpers\get',
             'sortFn' => function ($a, $b) {
                 if ($a['score'] === $b['score']) {
                     return $a['index'] === $b['index']
@@ -47,6 +50,66 @@ class Fuse
         $this->options['isCaseSensitive'] = $this->options['caseSensitive'];
 
         $this->setCollection($list);
+        $this->processKeys($this->options['keys']);
+    }
+
+    protected function processKeys(array $keys)
+    {
+        $this->keyWeights = [];
+        $this->keyNames = [];
+    
+        // Iterate over every key
+        if (sizeof($keys) > 0 && is_string($keys[0])) {
+            foreach ($keys as $key) {
+                $this->keyWeights[$key] = 1;
+                $this->keyNames[] = $key;
+            }
+        } else {
+            $lowest = null;
+            $highest = null;
+            $weightsTotal = 0;
+
+            foreach ($keys as $key) {
+                if (!isset($key['name'])) {
+                    throw new \Exception('Missing "name" property in key array');
+                }
+
+                $keyName = $key['name'];
+                $this->keyNames[] = $keyName;
+
+                if (!isset($key['weight'])) {
+                    throw new \Exception('Missing "weight" property in key array');
+                }
+
+                $keyWeight = $key['weight'];
+
+                if ($keyWeight < 0 || $keyWeight > 1) {
+                    throw new \Exception(
+                        '"weight" property in key must bein the range of [0, 1)'
+                    );
+                }
+
+                if (is_null($highest)) {
+                    $highest = $keyWeight;
+                } else {
+                    $highest = max($highest, $keyWeight);
+                }
+
+                if (is_null($lowest)) {
+                    $lowest = $keyWeight;
+                } else {
+                    $lowest = min($lowest, $keyWeight);
+                }
+
+                $this->keyWeights[$keyName] = $keyWeight;
+
+                $weightsTotal += $keyWeight;
+            }
+
+            if ($weightsTotal > 1) {
+                throw new \Exception('Total of weights cannot exceed 1, was ' . $weightsTotal);
+            }
+        }
     }
 
     public function setCollection($list)
@@ -62,19 +125,19 @@ class Fuse
 
         $searchers = $this->prepareSearchers($pattern);
 
-        $search = $this->innerSearch($searchers['tokenSearchers'], $searchers['fullSearcher']);
+        $results = $this->innerSearch($searchers['tokenSearchers'], $searchers['fullSearcher']);
 
-        $this->computeScore($search['weights'], $search['results']);
+        $this->computeScore($results);
 
         if ($this->options['shouldSort']) {
-            $this->sort($search['results']);
+            $this->sort($results);
         }
 
         if (is_int($opts['limit'])) {
-            $search['results'] = array_slice($search['results'], 0, $opts['limit']);
+            $results = array_slice($results, 0, $opts['limit']);
         }
 
-        return $this->format($search['results']);
+        return $this->format($results);
     }
 
     protected function prepareSearchers($pattern = '')
@@ -123,34 +186,14 @@ class Fuse
                 );
             }
 
-            return [
-                'weights' => null,
-                'results' => $results
-            ];
+            return $results;
         }
 
         // Otherwise, the first item is an Object (hopefully), and thus the searching
         // is done on the values of the keys of each item.
-        $weights = [];
-        for ($i = 0, $len = sizeof($list); $i < $len; $i++) {
-            $item = $list[$i];
+        foreach ($list as $i => $item) {
             // Iterate over every key
-            for ($j = 0, $keysLen = sizeof($this->options['keys']); $j < $keysLen; $j++) {
-                $key = $this->options['keys'][$j];
-                if (!is_string($key)) {
-                    $weights[$key['name']] = [
-                        'weight' => (1 - $key['weight']) ?: 1
-                    ];
-                    if ($key['weight'] <= 0 || $key['weight'] > 1) {
-                        throw new \LogicException('Key weight has to be > 0 and <= 1');
-                    }
-                    $key = $key['name'];
-                } else {
-                    $weights[$key] = [
-                        'weight' => 1
-                    ];
-                }
-
+            foreach ($this->keyNames as $key) {
                 $this->analyze(
                     [
                         'key' => $key,
@@ -166,10 +209,7 @@ class Fuse
             }
         }
 
-        return [
-            'weights' => $weights,
-            'results' => $results
-        ];
+        return $results;
     }
 
     protected function analyze($query = [], &$resultMap = [], &$results = [], &$tokenSearchers = [], &$fullSearcher = null)
@@ -182,171 +222,151 @@ class Fuse
             'index' => null
         ], $query);
 
-        // Check if the texvaluet can be searched
-        if (is_null($query['value'])) {
-            return;
-        }
+        $key = $query['key'];
 
-        $exists = false;
-        $averageScore = -1;
-        $numTextMatches = 0;
+        $search = function ($arrayIndex, $value, $record, $index) use ($key, $fullSearcher, $tokenSearchers, &$resultMap, &$search, &$results) {
+            // Check if the text value can be searched
+            if (is_null($value)) {
+                return;
+            }
 
-        if (is_string($query['value'])) {
-            $this->log("\nKey: " . ($query['key'] === '' ? '-' : $query['key']));
+            $exists = false;
+            $averageScore = -1;
+            $numTextMatches = 0;
 
-            $mainSearchResult = $fullSearcher->search($query['value']);
-            $this->log('Full text: "' . $query['value'] . '", score: ' . $mainSearchResult['score']);
+            if (is_string($value)) {
+                $this->log("\nKey: " . ($key === '' ? '--' : $key));
 
-            if ($this->options['tokenize']) {
-                $words = mb_split($this->options['tokenSeparator'], $query['value']);
-                $scores = [];
+                $mainSearchResult = $fullSearcher->search($value);
+                $this->log('Full text: "' . $value . '", score: ' . $mainSearchResult['score']);
 
-                for ($i = 0; $i < sizeof($tokenSearchers); $i++) {
-                    $tokenSearcher = $tokenSearchers[$i];
+                // TODO: revisit this to take into account term frequency
+                if ($this->options['tokenize']) {
+                    $words = mb_split($this->options['tokenSeparator'], $value);
+                    $scores = [];
 
-                    $this->log("\nPattern: \"{$tokenSearcher->pattern}\"");
+                    foreach ($tokenSearchers as $tokenSearcher) {
+                        $this->log("\nPattern: \"{$tokenSearcher->pattern}\"");
 
-                    // $tokenScores = []
-                    $hasMatchInText = false;
+                        // $tokenScores = []
+                        $hasMatchInText = false;
 
-                    for ($j = 0; $j < sizeof($words); $j++) {
-                        $word = $words[$j];
-                        $tokenSearchResult = $tokenSearcher->search($word);
-                        $obj = [];
-                        if ($tokenSearchResult['isMatch']) {
-                            $obj[$word] = $tokenSearchResult['score'];
-                            $exists = true;
-                            $hasMatchInText = true;
-                            $scores[] = $tokenSearchResult['score'];
-                        } else {
-                            $obj[$word] = 1;
-                            if (!$this->options['matchAllTokens']) {
-                                $scores[] = 1;
+                        foreach ($words as $word) {
+                            $tokenSearchResult = $tokenSearcher->search($word);
+                            $obj = [];
+                            if ($tokenSearchResult['isMatch']) {
+                                $obj[$word] = $tokenSearchResult['score'];
+                                $exists = true;
+                                $hasMatchInText = true;
+                                $scores[] = $tokenSearchResult['score'];
+                            } else {
+                                $obj[$word] = 1;
+                                if (!$this->options['matchAllTokens']) {
+                                    $scores[] = 1;
+                                }
                             }
+                            $this->log('Token: "' . $word . '", score: ' . $obj[$word]);
+                            // tokenScores.push(obj)
                         }
-                        $this->log('Token: "' . $word . '", score: ' . $obj[$word]);
-                        // tokenScores.push(obj)
+
+                        if ($hasMatchInText) {
+                            $numTextMatches += 1;
+                        }
                     }
 
-                    if ($hasMatchInText) {
-                        $numTextMatches += 1;
+                    $scoresLen = sizeof($scores);
+
+                    if ($scoresLen > 0) {
+                        $averageScore = array_sum($scores) / $scoresLen;
+                    } else {
+                        $averageScore = -1;
                     }
+
+                    $this->log('Token score average: ', $averageScore);
                 }
 
-                $scoresLen = sizeof($scores);
-
-                if ($scoresLen > 0) {
-                    $averageScore = $scores[0];
-                    for ($i = 1; $i < $scoresLen; $i++) {
-                        $averageScore += $scores[$i];
-                    }
-                    $averageScore = $averageScore / $scoresLen;
-                } else {
-                    $averageScore = -1;
+                $finalScore = $mainSearchResult['score'];
+                if ($averageScore > -1) {
+                    $finalScore = ($finalScore + $averageScore) / 2;
                 }
 
-                $this->log('Token score average: ', $averageScore);
-            }
+                $this->log('Score average: ', $finalScore);
 
-            $finalScore = $mainSearchResult['score'];
-            if ($averageScore > -1) {
-                $finalScore = ($finalScore + $averageScore) / 2;
-            }
+                $checkTextMatches = ($this->options['tokenize'] && $this->options['matchAllTokens'])
+                    ? $numTextMatches >= sizeof($tokenSearchers)
+                    : true;
 
-            $this->log('Score average: ', $finalScore);
+                $this->log("\nCheck Matches: ", $checkTextMatches);
 
-            $checkTextMatches = ($this->options['tokenize'] && $this->options['matchAllTokens'])
-                ? $numTextMatches >= sizeof($tokenSearchers)
-                : true;
-
-            $this->log("\nCheck Matches: ", $checkTextMatches);
-
-            // If a match is found, add the item to <rawResults>, including its score
-            if (($exists || $mainSearchResult['isMatch']) && $checkTextMatches) {
-                // Check if the item already exists in our results
-                if (isset($resultMap[$query['index']])) {
-                    $existingResult = &$resultMap[$query['index']];
-                } else {
-                    $existingResult = null;
-                }
-
-                if (!is_null($existingResult)) {
-                    // Use the lowest score
-                    // existingResult.score, bitapResult.score
-                    $existingResult['output'][] = [
-                        'key' => $query['key'],
-                        'arrayIndex' => $query['arrayIndex'],
-                        'value' => $query['value'],
-                        'score' => $finalScore,
-                        'matchedIndices' => $mainSearchResult['matchedIndices']
+                // If a match is found, add the item to <rawResults>, including its score
+                if (($exists || $mainSearchResult['isMatch']) && $checkTextMatches) {
+                    $_searchResult = [
+                        'key' => $key,
+                        'arrayIndex' => $arrayIndex,
+                        'value' => $value,
+                        'score' => $finalScore
                     ];
-                } else {
-                    // Add it to the raw result list
-                    $resultMap[$query['index']] = [
-                        'item' => $query['record'],
-                        'output' => [[
-                            'key' => $query['key'],
-                            'arrayIndex' => $query['arrayIndex'],
-                            'value' => $query['value'],
-                            'score' => $finalScore,
-                            'matchedIndices' => $mainSearchResult['matchedIndices']
-                        ]]
-                    ];
+                    
+                    if ($this->options['includeMatches']) {
+                        $_searchResult['matchedIndices'] = $mainSearchResult['matchedIndices'];
+                    }
 
-                    $results[] = &$resultMap[$query['index']];
+                    // Check if the item already exists in our results
+                    if (isset($resultMap[$index])) {
+                        $existingResult = &$resultMap[$index];
+                    } else {
+                        $existingResult = null;
+                    }
+
+                    if (!is_null($existingResult)) {
+                        // Use the lowest score
+                        // existingResult.score, bitapResult.score
+                        $existingResult['output'][] = $_searchResult;
+                    } else {
+                        $resultMap[$index] = [
+                            'item' => $record,
+                            'output' => [$_searchResult]
+                        ];
+
+                        $results[] = &$resultMap[$index];
+                    }
+                }
+            } elseif (is_list($value)) {
+                for ($i = 0; $i < sizeof($value); $i++) {
+                    $search($i, $value[$i], $record, $index);
                 }
             }
-        } elseif (is_list($query['value'])) {
-            for ($i = 0, $len = sizeof($query['value']); $i < $len; $i++) {
-                $this->analyze(
-                    [
-                        'key' => $query['key'],
-                        'arrayIndex' => $i,
-                        'value' => $query['value'][$i],
-                        'record' => $query['record'],
-                        'index' => $query['index']
-                    ],
-                    $resultMap,
-                    $results,
-                    $tokenSearchers,
-                    $fullSearcher
-                );
-            }
-        }
+        };
+
+        $search($query['arrayIndex'], $query['value'], $query['record'], $query['index']);
     }
 
-    protected function computeScore($weights, &$results)
+    protected function computeScore(&$results)
     {
         $this->log("\n\nComputing score:\n");
 
-        for ($i = 0, $len = sizeof($results); $i < $len; $i++) {
-            $result = &$results[$i];
+        $weights = $this->keyWeights;
+        $hasWeights = !empty($weights);
+
+        foreach ($results as &$result) {
             $output = $result['output'];
             $scoreLen = sizeof($output);
 
-            $currScore = 1;
-            $bestScore = 1;
+            $totalWeightedScore = 1;
 
             for ($j = 0; $j < $scoreLen; $j++) {
-                $weight = $weights
-                    ? $weights[$output[$j]['key']]['weight']
-                    : 1;
-                $score = $weight === 1
-                    ? $output[$j]['score']
-                    : ($output[$j]['score'] ?: 0.001);
-                $nScore = $score * $weight;
+                $item = $output[$j];
+                $key = $item['key'];
 
-                if ($weight !== 1) {
-                    $bestScore = min($bestScore, $nScore);
-                } else {
-                    $output[$j]['nScore'] = $nScore;
-                    $currScore *= $nScore;
-                }
+                $weight = $hasWeights ? $weights[$key] : 1;
+                $score = $item['score'] === 0 && $hasWeights && $weights[$key] > 0
+                    ? (defined('PHP_FLOAT_EPSILON') ? PHP_FLOAT_EPSILON : 0.00001)
+                    : $item['score'];
+
+                $totalWeightedScore *= pow($score, $weight);
             }
 
-            $result['score'] = $bestScore == 1
-                ? $currScore
-                : $bestScore;
+            $result['score'] = $totalWeightedScore;
 
             $this->log($result);
         }
