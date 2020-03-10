@@ -30,8 +30,8 @@ install:
       EnablePhpExtension `
         -Name       openssl
   - ps: >-
-    EnablePhpExtension `
-      -Name       mbstring
+      EnablePhpExtension `
+        -Name       mbstring
   - ps: $env:Path += ";C:\php"
 
 before_test:
