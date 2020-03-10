@@ -1,11 +1,20 @@
 build: false
 
 environment:
-  # Use this matrix as an example
   matrix:
-
-    # Specify matrix item for your app
+    - PHP_VERSION: 5.6
+      VC_VERSION: 15
+      BUILD_TYPE: nts-Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - PHP_VERSION: 7.2
+      VC_VERSION: 15
+      BUILD_TYPE: nts-Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     - PHP_VERSION: 7.3
+      VC_VERSION: 15
+      BUILD_TYPE: nts-Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - PHP_VERSION: 7.4
       VC_VERSION: 15
       BUILD_TYPE: nts-Win32
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
