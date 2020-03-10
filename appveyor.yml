@@ -1,52 +1,38 @@
 build: false
+
+environment:
+  # Use this matrix as an example
+  matrix:
+
+    # Specify matrix item for your app
+    - PHP_VERSION: 7.3
+      VC_VERSION: 15
+      BUILD_TYPE: nts-Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+  # Specify required PHP SDK binary tools if you need SDK
+  PHP_SDK_VERSION: 2.1.9
+
+  PHP_AVM: https://raw.githubusercontent.com/sergeyklay/php-appveyor/master/php-appveyor.psm1
+
+cache:
+  - 'C:\Downloads -> .appveyor.yml'
+
 platform:
   - x64
-clone_folder: c:\projects\php-project-workspace
 
-## Build matrix for lowest and highest possible targets
-environment:
-  matrix:
-  - php_ver_target: 5.6
-  - php_ver_target: 7.0
-  - php_ver_target: 7.1
-  - php_ver_target: 7.2
-  - php_ver_target: 7.3
-
-## Cache composer, chocolatey and php bits
-cache:
-  - '%LOCALAPPDATA%\Composer\files -> composer.lock'
-  - composer.phar
-  # Cache chocolatey packages
-  - C:\ProgramData\chocolatey\bin -> .appveyor.yml
-  - C:\ProgramData\chocolatey\lib -> .appveyor.yml
-  # Cache php install
-  - c:\tools\php -> .appveyor.yml
-
-## Set up environment variables
-init:
-  - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
-  - SET COMPOSER_NO_INTERACTION=1
-  - SET PHP=1 # This var is connected to PHP install cache
-  - SET ANSICON=121x90 (121x90)
-
-## Install PHP and composer, and run the appropriate composer command
 install:
-  - IF EXIST c:\tools\php (SET PHP=0) # Checks for the PHP install being cached
-  - ps: appveyor-retry cinst --params '""/InstallDir:C:\tools\php""' --ignore-checksums -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php_ver_target | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
-  - cd c:\tools\php
-  - IF %PHP%==1 copy php.ini-production php.ini /Y
-  - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
-  - IF %PHP%==1 echo extension_dir=ext >> php.ini
-  - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
-  - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
-  - IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
-  - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
-  - appveyor-retry appveyor DownloadFile https://getcomposer.org/composer.phar
-  - cd c:\projects\php-project-workspace
+  # Download php-appveyor.psm1 module and invoke it to the current session
+  - ps: (new-object Net.WebClient).DownloadString($Env:PHP_AVM) | iex
+  - ps: InstallPhp        $Env:PHP_VERSION $Env:BUILD_TYPE $Env:VC_VERSION $Env:PLATFORM
+  - ps: InstallComposer
+  - ps: >-
+      EnablePhpExtension `
+        -Name       openssl 
+
+before_test:
   - composer update --no-progress --profile -n
   - composer show
 
-## Run the actual test
 test_script:
-  - cd c:\projects\php-project-workspace
   - vendor/bin/phpunit test
