@@ -28,17 +28,16 @@ platform:
   - x64
 
 install:
-  # Download php-appveyor.psm1 module and invoke it to the current session
   - ps: (new-object Net.WebClient).DownloadString($Env:PHP_AVM) | iex
   - ps: InstallPhp        $Env:PHP_VERSION $Env:BUILD_TYPE $Env:VC_VERSION $Env:PLATFORM
   - ps: InstallComposer
+  - ps: $env:Path += ";C:\php"
   - ps: >-
       EnablePhpExtension `
         -Name       openssl
   - ps: >-
       EnablePhpExtension `
         -Name       mbstring
-  - ps: $env:Path += ";C:\php"
 
 before_test:
   - composer update --no-progress --profile -n
