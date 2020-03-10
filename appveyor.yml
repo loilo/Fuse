@@ -28,7 +28,10 @@ install:
   - ps: InstallComposer
   - ps: >-
       EnablePhpExtension `
-        -Name       openssl 
+        -Name       openssl
+  - ps: >-
+    EnablePhpExtension `
+      -Name       mbstring
   - ps: $env:Path += ";C:\php"
 
 before_test:
