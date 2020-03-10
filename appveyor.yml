@@ -3,7 +3,7 @@ build: false
 environment:
   matrix:
     - PHP_VERSION: 5.6
-      VC_VERSION: 15
+      VC_VERSION: 11
       BUILD_TYPE: nts-Win32
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     - PHP_VERSION: 7.2
