@@ -1,3 +1,9 @@
+<div align="center">
+
+  ![The Fuse logo, a violet asterisk, in reference to the Fuse.js logo](fuse.svg)
+  <br>
+</div>
+
 # Fuse
 [![Travis](https://badgen.net/travis/loilo/Fuse?icon=travis&label=unix)](https://travis-ci.org/Loilo/Fuse) [![AppVeyor](https://badgen.net/appveyor/ci/loilo/Fuse?icon=appveyor&label=windows)](https://ci.appveyor.com/project/Loilo/fuse) [![Packagist](https://badgen.net/packagist/v/loilo/fuse)](https://packagist.org/packages/loilo/fuse)
 
