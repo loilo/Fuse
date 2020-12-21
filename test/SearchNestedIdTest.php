@@ -8,7 +8,7 @@ class SearchNestedIdTest extends TestCase
 {
     protected static $fuse;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$fuse = new Fuse([[
             'ISBN' => [ 'name' => 'A' ],
@@ -33,7 +33,7 @@ class SearchNestedIdTest extends TestCase
         $this->assertCount(1, $result);
 
         // ...whose value is the ISBN of the book
-        $this->assertInternalType('string', $result[0]);
+        $this->assertIsString($result[0]);
         $this->assertEquals('B', $result[0]);
     }
 }

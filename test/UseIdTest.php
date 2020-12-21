@@ -8,7 +8,7 @@ class UseIdTest extends TestCase
 {
     protected static $fuse;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$fuse = new Fuse([[
             'ISBN' => '0765348276',

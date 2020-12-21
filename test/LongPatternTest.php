@@ -9,7 +9,7 @@ class LongPatternTest extends TestCase
 {
     protected static $fuse;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$fuse = new Fuse([
           [

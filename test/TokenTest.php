@@ -9,7 +9,7 @@ class TokenTest extends TestCase
 {
     protected static $items;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$items = [
             'AustralianSuper - Corporate Division',

@@ -9,7 +9,7 @@ class SearchLocationTest extends TestCase
 {
     protected static $fuse;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$fuse = new Fuse([[ 'name' => 'Hello World' ]], [
             'keys' => ['name'],

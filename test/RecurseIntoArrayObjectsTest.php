@@ -4,11 +4,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use Fuse\Fuse;
 
-class RecurseArrayObjectsTest extends TestCase
+class RecurseIntoArrayObjectsTest extends TestCase
 {
     protected static $fuse;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$fuse = new Fuse([
             [

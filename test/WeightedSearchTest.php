@@ -9,7 +9,7 @@ class WeightedSearchTest extends TestCase
 {
     protected static $books;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$books = [[
             'title' => "Old Man's War fiction",
