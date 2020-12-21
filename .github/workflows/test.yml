@@ -1,0 +1,30 @@
+name: Test CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - "*.md"
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        php-version: ['7.3', '7.4', '8.0']
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer
+      - run: composer install
+      - run: vendor/bin/phpunit test
