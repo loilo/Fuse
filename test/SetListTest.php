@@ -9,7 +9,7 @@ class SetListTest extends TestCase
 {
     protected static $fuse;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         $fruits = ['Apple', 'Orange', 'Banana'];
         $vegetables = ['Onion', 'Lettuce', 'Broccoli'];

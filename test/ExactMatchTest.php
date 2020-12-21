@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Fuse\Fuse;
 
 // Weighted Search
-class ExactSearchTest extends TestCase
+class ExactMatchTest extends TestCase
 {
     protected static $books;
 
