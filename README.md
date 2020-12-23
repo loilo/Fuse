@@ -5,7 +5,8 @@
 </div>
 
 # Fuse
-[![Travis](https://badgen.net/travis/loilo/Fuse?icon=travis&label=unix)](https://travis-ci.org/Loilo/Fuse) [![AppVeyor](https://badgen.net/appveyor/ci/loilo/Fuse?icon=appveyor&label=windows)](https://ci.appveyor.com/project/Loilo/fuse) [![Packagist](https://badgen.net/packagist/v/loilo/fuse)](https://packagist.org/packages/loilo/fuse)
+[![Tests](https://badgen.net/github/checks/loilo/Fuse/master)](https://github.com/loilo/Fuse/actions)
+[![Packagist](https://badgen.net/packagist/v/loilo/fuse)](https://packagist.org/packages/loilo/fuse)
 
 *A fuzzy search library for PHP based on the [Bitap](https://en.wikipedia.org/wiki/Bitap_algorithm) algorithm*
 
