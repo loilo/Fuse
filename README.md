@@ -32,8 +32,6 @@ This package is available via Composer. To add it to your project, just run:
 composer require loilo/fuse
 ```
 
-> **Note:** Be aware that this package has the same major and minor version as the Fuse.js original. However, the patch version numbers may differ since this repository may need additional fixes from time to time.
-
 ## Usage
 
 ```php
