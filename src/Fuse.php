@@ -169,7 +169,7 @@ class Fuse
 
         // Check the first item in the list, if it's a string, then we assume
         // that every item in the list is also a string, and thus it's a flattened array.
-        if (is_string($list[0])) {
+        if (is_string($list[0] ?? null)) {
             // Iterate over every item
             for ($i = 0, $len = sizeof($list); $i < $len; $i++) {
                 $this->analyze(
