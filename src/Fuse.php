@@ -114,7 +114,7 @@ class Fuse
         $limit = $options['limit'] ?? -1;
 
         $results = is_string($query)
-            ? (is_string($this->docs[0])
+            ? (is_string($this->docs[0] ?? null)
                 ? $this->searchStringList($query)
                 : $this->searchObjectList($query))
             : $this->searchLogical($query);
