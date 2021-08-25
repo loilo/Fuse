@@ -1,43 +1,57 @@
-<?php namespace Fuse\Helpers;
+<?php
+
+namespace Fuse\Helpers;
+
+use function Fuse\Helpers\Types\{isArray, isNumber};
+
+/**
+ * @return void
+ */
+function deepGet($obj, array $path, $index, &$list, &$arr)
+{
+    if (is_null($obj)) {
+        return;
+    }
+
+    if (!isset($path[$index])) {
+        // If there's no path left, we've arrived at the object we care about.
+        $list[] = $obj;
+    } else {
+        $key = $path[$index];
+        $value = $obj[$key] ?? null;
+
+        if (is_null($value)) {
+            return;
+        }
+
+        // If we're at the last value in the path, and if it's a string/number/bool,
+        // add it to the list
+        if (
+            $index === sizeof($path) - 1 &&
+            (is_string($value) || isNumber($value) || is_bool($value))
+        ) {
+            $list[] = is_bool($value) ? json_encode($value) : (string) $value;
+        } elseif (isArray($value)) {
+            $arr = true;
+
+            // Search each item in the array.
+            for ($i = 0, $len = sizeof($value); $i < $len; $i += 1) {
+                deepGet($value[$i], $path, $index + 1, $list, $arr);
+            }
+        } elseif (sizeof($path) > 0) {
+            // An object. Recurse further.
+            deepGet($value, $path, $index + 1, $list, $arr);
+        }
+    }
+}
 
 function get($obj, $path)
 {
     $list = [];
+    $arr = false;
 
-    $get = function ($obj, $path) use (&$list, &$get) {
-        if (!$path) {
-            // If there's no $path left, we've gotten to the $object we care about.
-            $list[] = $obj;
-        } else {
-            $dotIndex = strpos($path, '.');
+    // Backwards compatibility (since path used to be a string)
+    deepGet($obj, is_string($path) ? explode('.', $path) : $path, 0, $list, $arr);
 
-            $key = $path;
-            $remaining = null;
-
-            if ($dotIndex !== false) {
-                $key = substr($path, 0, $dotIndex);
-                $remaining = substr($path, $dotIndex + 1);
-            }
-
-            $value = isset($obj[$key]) ? $obj[$key] : null;
-
-            if (!is_null($value)) {
-                if (!$remaining && (is_string($value) || is_float($value) || is_int($value))) {
-                    $list[] = (string) ($value);
-                } elseif (is_list($value)) {
-                    // Search each item in the array.
-                    foreach ($value as $item) {
-                        $get($item, $remaining);
-                    }
-                } elseif ($remaining) {
-                    // An $object. Recurse further.
-                    $get($value, $remaining);
-                }
-            }
-        }
-    };
-
-    $get($obj, $path);
-
-    return $list;
+    return $arr ? $list : $list[0] ?? null;
 }
