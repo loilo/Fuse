@@ -1,0 +1,21 @@
+arrowParens: avoid
+bracketSpacing: true
+htmlWhitespaceSensitivity: css
+insertPragma: false
+jsxBracketSameLine: false
+jsxSingleQuote: false
+printWidth: 100
+proseWrap: preserve
+requirePragma: false
+semi: false
+singleQuote: true
+tabWidth: 4
+trailingComma: none
+useTabs: false
+endOfLine: lf
+phpVersion: '7.4'
+
+overrides:
+    - files: '*.svg'
+      options:
+          parser: html

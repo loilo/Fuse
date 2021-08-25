@@ -1,107 +1,167 @@
 <?php
+
+declare(strict_types=1);
+
 return [
     [
-        'title' => 'The code of the wooster',
-        'author' => 'aa'
-    ],
-    [
-        'title' => 'the wooster code',
-        'author' => 'aa'
-    ],
-    [
-        'title' => 'The code',
-        'author' => 'aa'
-    ],
-    [
         'title' => 'Old Man\'s War',
-        'author' => 'John Scalzi'
+        'author' => [
+            'firstName' => 'John',
+            'lastName' => 'Scalzi',
+        ],
     ],
     [
         'title' => 'The Lock Artist',
-        'author' => 'Steve Hamilton'
+        'author' => [
+            'firstName' => 'Steve',
+            'lastName' => 'Hamilton',
+        ],
     ],
     [
         'title' => 'HTML5',
-        'author' => 'Remy Sharp'
+        'author' => [
+            'firstName' => 'Remy',
+            'lastName' => 'Sharp',
+        ],
     ],
     [
         'title' => 'Right Ho Jeeves',
-        'author' => 'P.D. Woodhouse'
+        'author' => [
+            'firstName' => 'P.D',
+            'lastName' => 'Woodhouse',
+        ],
     ],
     [
         'title' => 'The Code of the Wooster',
-        'author' => 'P.D. Woodhouse'
+        'author' => [
+            'firstName' => 'P.D',
+            'lastName' => 'Woodhouse',
+        ],
     ],
     [
         'title' => 'Thank You Jeeves',
-        'author' => 'P.D. Woodhouse'
+        'author' => [
+            'firstName' => 'P.D',
+            'lastName' => 'Woodhouse',
+        ],
     ],
     [
         'title' => 'The DaVinci Code',
-        'author' => 'Dan Brown'
+        'author' => [
+            'firstName' => 'Dan',
+            'lastName' => 'Brown',
+        ],
     ],
     [
         'title' => 'Angels & Demons',
-        'author' => 'Dan Brown'
+        'author' => [
+            'firstName' => 'Dan',
+            'lastName' => 'Brown',
+        ],
     ],
     [
         'title' => 'The Silmarillion',
-        'author' => 'J.R.R Tolkien'
+        'author' => [
+            'firstName' => 'J.R.R',
+            'lastName' => 'Tolkien',
+        ],
     ],
     [
         'title' => 'Syrup',
-        'author' => 'Max Barry'
+        'author' => [
+            'firstName' => 'Max',
+            'lastName' => 'Barry',
+        ],
     ],
     [
         'title' => 'The Lost Symbol',
-        'author' => 'Dan Brown'
+        'author' => [
+            'firstName' => 'Dan',
+            'lastName' => 'Brown',
+        ],
     ],
     [
         'title' => 'The Book of Lies',
-        'author' => 'Brad Meltzer'
+        'author' => [
+            'firstName' => 'Brad',
+            'lastName' => 'Meltzer',
+        ],
     ],
     [
         'title' => 'Lamb',
-        'author' => 'Christopher Moore'
+        'author' => [
+            'firstName' => 'Christopher',
+            'lastName' => 'Moore',
+        ],
     ],
     [
         'title' => 'Fool',
-        'author' => 'Christopher Moore'
+        'author' => [
+            'firstName' => 'Christopher',
+            'lastName' => 'Moore',
+        ],
     ],
     [
         'title' => 'Incompetence',
-        'author' => 'Rob Grant'
+        'author' => [
+            'firstName' => 'Rob',
+            'lastName' => 'Grant',
+        ],
     ],
     [
         'title' => 'Fat',
-        'author' => 'Rob Grant'
+        'author' => [
+            'firstName' => 'Rob',
+            'lastName' => 'Grant',
+        ],
     ],
     [
         'title' => 'Colony',
-        'author' => 'Rob Grant'
+        'author' => [
+            'firstName' => 'Rob',
+            'lastName' => 'Grant',
+        ],
     ],
     [
         'title' => 'Backwards, Red Dwarf',
-        'author' => 'Rob Grant'
+        'author' => [
+            'firstName' => 'Rob',
+            'lastName' => 'Grant',
+        ],
     ],
     [
         'title' => 'The Grand Design',
-        'author' => 'Stephen Hawking'
+        'author' => [
+            'firstName' => 'Stephen',
+            'lastName' => 'Hawking',
+        ],
     ],
     [
         'title' => 'The Book of Samson',
-        'author' => 'David Maine'
+        'author' => [
+            'firstName' => 'David',
+            'lastName' => 'Maine',
+        ],
     ],
     [
         'title' => 'The Preservationist',
-        'author' => 'David Maine'
+        'author' => [
+            'firstName' => 'David',
+            'lastName' => 'Maine',
+        ],
     ],
     [
         'title' => 'Fallen',
-        'author' => 'David Maine'
+        'author' => [
+            'firstName' => 'David',
+            'lastName' => 'Maine',
+        ],
     ],
     [
         'title' => 'Monster 1959',
-        'author' => 'David Maine'
-    ]
+        'author' => [
+            'firstName' => 'David',
+            'lastName' => 'Maine',
+        ],
+    ],
 ];
