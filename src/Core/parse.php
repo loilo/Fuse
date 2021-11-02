@@ -8,12 +8,6 @@ use Fuse\Tools\KeyStore;
 
 use function Fuse\Helpers\Types\{isArray, isAssoc};
 
-class KeyType
-{
-    const PATH = '$path';
-    const PATTERN = '$val';
-}
-
 function isExpression(array $query): bool
 {
     return isset($query[LogicalOperator::AND]) || isset($query[LogicalOperator::OR]);
@@ -37,7 +31,7 @@ function isLeaf(array $query): bool
 function convertToExplicit(array $query): array
 {
     return [
-        LogicalOperator::AND => array_map(fn($key) => [$key => $query[$key]], array_keys($query)),
+        LogicalOperator::AND => array_map(fn ($key) => [$key => $query[$key]], array_keys($query)),
     ];
 }
 
