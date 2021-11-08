@@ -216,7 +216,7 @@ class FuseIndex implements JsonSerializable
         $this->records[] = $record;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'keys' => $this->keys,
