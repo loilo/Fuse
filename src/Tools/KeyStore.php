@@ -93,7 +93,7 @@ class KeyStore implements JsonSerializable
         return $this->keys;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->keys;
     }
