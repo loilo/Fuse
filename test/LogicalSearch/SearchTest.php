@@ -124,4 +124,27 @@ class SearchTest extends TestCase
         $this->assertCount(2, $result);
         $this->assertArraySubset([7, 0], $this->idx($result));
     }
+
+    public function testSearchWithLogicalOrWithSameQueryAcrossFieldsForWood(): void
+    {
+        $options = [
+            'keys' => ['title', 'author.lastName']
+        ];
+        $fuse = new Fuse(static::$books, $options);
+        
+        $query = [
+            '$or' => [
+                [
+                    'title' => 'wood'
+                ],
+                [
+                    'author.lastName' => 'wood'
+                ]
+            ]
+        ];
+        $result = $fuse->search($query);
+
+        // we get the top three results scored based matches from all their fields
+        $this->assertEquals([4, 3, 5], $this->idx(array_slice($result, 0, 3)));
+    }
 }

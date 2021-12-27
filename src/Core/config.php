@@ -31,6 +31,7 @@ function config(...$args)
             'getFn' => '\Fuse\Helpers\get',
             'ignoreLocation' => false,
             'ignoreFieldNorm' => false,
+            'fieldNormWeight' => 1,
         ];
     }
 

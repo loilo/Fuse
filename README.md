@@ -17,7 +17,7 @@ This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) proje
 
 Check out their [demo](https://fusejs.io/demo.html) and [examples](https://fusejs.io/examples.html) to get a good feel for what this library is capable of.
 
-> Latest compatible Fuse.js version: 6.4.6
+> Latest compatible Fuse.js version: 6.5.3
 
 ---
 
@@ -248,6 +248,15 @@ When `true`, the calculation for the relevance score (used for sorting) will ign
 ---
 
 > **Tip:** The only time it makes sense to set `ignoreFieldNorm` to `true` is when it does not matter how many terms there are, but only that the query term exists.
+
+### `fieldNormWeight`
+
+-    Type: `float`
+-    Default: `1`
+
+Determines how much the [field-length norm](https://fusejs.io/concepts/scoring-theory.html#field-length-norm) affects scoring. A value of `0` is equivalent to ignoring the field-length norm. A value of `0.5` will greatly reduce the effect of field-length norm, while a value of `2.0` will greatly increase it.
+
+---
 
 ### Global Config
 

@@ -64,6 +64,7 @@ class Fuse
             $index ??
             FuseIndex::create($this->options['keys'], $this->docs, [
                 'getFn' => $this->options['getFn'],
+                'fieldNormWeight' => $this->options['fieldNormWeight'],
             ]);
     }
 
@@ -194,32 +195,17 @@ class Fuse
                 return [];
             }
 
-            switch ($node['operator']) {
-                case LogicalOperator::AND:
-                    $res = [];
-                    for ($i = 0, $len = sizeof($node['children']); $i < $len; $i += 1) {
-                        $child = $node['children'][$i];
-                        $result = $evaluate($child, $item, $idx);
-                        if (sizeof($result) > 0) {
-                            array_push($res, ...$result);
-                        } else {
-                            return [];
-                        }
-                    }
-                    return $res;
-
-                case LogicalOperator::OR:
-                    $res = [];
-                    for ($i = 0, $len = sizeof($node['children']); $i < $len; $i += 1) {
-                        $child = $node['children'][$i];
-                        $result = $evaluate($child, $item, $idx);
-                        if (sizeof($result) > 0) {
-                            array_push($res, ...$result);
-                            break;
-                        }
-                    }
-                    return $res;
+            $res = [];
+            for ($i = 0, $len = sizeof($node['children']); $i < $len; $i += 1) {
+                $child = $node['children'][$i];
+                $result = $evaluate($child, $item, $idx);
+                if (sizeof($result) > 0) {
+                    array_push($res, ...$result);
+                } elseif ($node['operator'] === LogicalOperator::AND) {
+                    return [];
+                }
             }
+            return $res;
         };
 
         $records = $this->myIndex->records;

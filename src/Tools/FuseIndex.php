@@ -18,6 +18,7 @@ class FuseIndex implements JsonSerializable
     {
         $myIndex = new static([
             'getFn' => $options['getFn'] ?? config('getFn'),
+            'fieldNormWeight' => $options['fieldNormWeight'] ?? config('fieldNormWeight'),
         ]);
         $myIndex->setKeys(array_map(fn($key) => KeyStore::createKey($key), $keys));
         $myIndex->setSources($docs);
@@ -33,6 +34,7 @@ class FuseIndex implements JsonSerializable
     {
         $myIndex = new static([
             'getFn' => $options['getFn'] ?? config('getFn'),
+            'fieldNormWeight' => $options['fieldNormWeight'] ?? config('fieldNormWeight'),
         ]);
         $myIndex->setKeys($data['keys']);
         $myIndex->setIndexRecords($data['records']);
@@ -50,7 +52,8 @@ class FuseIndex implements JsonSerializable
 
     public function __construct(array $options = [])
     {
-        $this->norm = new Norm(3);
+        $fieldNormWeight = $options['fieldNormWeight'] ?? config('fieldNormWeight');
+        $this->norm = new Norm($fieldNormWeight, 3);
         $this->getFn = $options['getFn'] ?? config('getFn');
 
         $this->setIndexRecords();
