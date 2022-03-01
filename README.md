@@ -27,6 +27,7 @@ Check out their [demo](https://fusejs.io/demo.html) and [examples](https://fusej
 -   [Usage](#usage)
 -   [Options](#options)
 -   [Methods](#methods)
+-   [Differences with Fuse.js](#differences-with-fusejs)
 -   [Development](#development)
 
 ---
@@ -98,9 +99,9 @@ This leads to the following results (where each result's `item` refers to the ma
 ];
 ```
 
-Fuse has a lot of options to refine your search. You can find them
-
 ## Options
+
+Fuse has a lot of options to refine your search:
 
 ### Basic Options
 
@@ -251,8 +252,8 @@ When `true`, the calculation for the relevance score (used for sorting) will ign
 
 ### `fieldNormWeight`
 
--    Type: `float`
--    Default: `1`
+-   Type: `float`
+-   Default: `1`
 
 Determines how much the [field-length norm](https://fusejs.io/concepts/scoring-theory.html#field-length-norm) affects scoring. A value of `0` is equivalent to ignoring the field-length norm. A value of `0.5` will greatly reduce the effect of field-length norm, while a value of `2.0` will greatly increase it.
 
@@ -475,7 +476,7 @@ List modification | Using `fuse.add()` etc. modifies the original list passed to
 
 Please note that I'm striving for feature parity with Fuse.js and therefore will add neither features nor fixes to the search logic that are not reflected in Fuse.js itself.
 
-If you have any issues with search results that are not obviously bugs in the PHP port (and if you know JavaScript), please check if your use case works correctly in the [online demo of Fuse.js](https://fusejs.io/demo.html) as this is the canonical Fuse implementation. Otherwise, please open an issue [on their side](https://github.com/krisk/Fuse).
+If you have any issues with search results that are _not_ obviously bugs in this PHP port, and you happen to know JavaScript, please check if your use case works correctly in the [online demo of Fuse.js](https://fusejs.io/demo.html) as that is the canonical Fuse implementation. If the issue appears there as well, please open an issue [in their repo](https://github.com/krisk/Fuse).
 
 ### Setup
 
@@ -496,7 +497,7 @@ Install Composer dependencies:
 composer install
 ```
 
-Install npm dependencies (optional but recommended):
+Install npm dependencies (optional but recommended). This is only needed for code formatting as npm dependencies include Prettier plugins used by this project.
 
 ```
 npm ci
