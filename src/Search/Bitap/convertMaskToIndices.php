@@ -27,7 +27,7 @@ function convertMaskToIndices(array $matchmask = [], ?int $minMatchCharLength = 
     }
 
     // (i-1 - start) + 1 => i - start
-    if ($matchmask[$i - 1] ?? false && $i - $start >= $minMatchCharLength) {
+    if (($matchmask[$i - 1] ?? false) && $i - $start >= $minMatchCharLength) {
         $indices[] = [$start, $i - 1];
     }
 
