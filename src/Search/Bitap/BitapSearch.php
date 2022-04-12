@@ -59,13 +59,13 @@ class BitapSearch implements SearchInterface
             $end = $len - $remainder;
 
             while ($i < $end) {
-                $addChunk(substr($this->pattern, $i, Constants::MAX_BITS), $i);
+                $addChunk(mb_substr($this->pattern, $i, Constants::MAX_BITS), $i);
                 $i += Constants::MAX_BITS;
             }
 
             if ($remainder) {
                 $startIndex = $len - Constants::MAX_BITS;
-                $addChunk(substr($this->pattern, $startIndex), $startIndex);
+                $addChunk(mb_substr($this->pattern, $startIndex), $startIndex);
             }
         } else {
             $addChunk($this->pattern, 0);
