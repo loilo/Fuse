@@ -15,7 +15,7 @@ const SEARCHERS = [
 ];
 
 // Regex to split by spaces, but keep anything in quotes together
-const SPACE_RE = '/ +(?=([^\\"]*\\"[^\\"]*\\")*[^\\"]*$)/';
+const SPACE_RE = '/ +(?=(?:[^\\"]*\\"[^\\"]*\\")*[^\\"]*$)/';
 const OR_TOKEN = '|';
 
 // Return a 2D array representation of the query, for simpler parsing.

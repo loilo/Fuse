@@ -166,7 +166,11 @@ class FuseIndex implements JsonSerializable
 
         // Iterate over every key (i.e, path), and fetch the value at that key
         foreach ($this->keys as $keyIndex => $key) {
-            $value = call_user_func($this->getFn, $doc, $key['path']);
+            if ($key['getFn'] ?? false ?: false) {
+                $value = call_user_func($key['getFn'], $doc);
+            } else {
+                $value = call_user_func($this->getFn, $doc, $key['path']);
+            }
 
             if (is_null($value)) {
                 continue;

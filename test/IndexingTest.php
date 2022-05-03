@@ -68,6 +68,27 @@ class IndexingTest extends TestCase
         $this->assertNotNull($myIndex->keys);
     }
 
+    public function testCreateIndexEnsureKeysCanBeCreatedWithGetFn(): void
+    {
+        $myIndex = Fuse::createIndex(
+            [
+                [
+                    'name' => 'title',
+                    'getFn' => fn($book) => $book['title'],
+                ],
+                [
+                    'name' => 'author.firstName',
+                    'getFn' => fn($book) => $book['author']['firstName'],
+                ],
+            ],
+            static::$books,
+        );
+
+        $data = json_decode(json_encode($myIndex), true);
+        $this->assertNotNull($data['records']);
+        $this->assertNotNull($data['keys']);
+    }
+
     public function testParseIndexEnsureIndexCanBeExportedAndFuseCanBeInitialized(): void
     {
         $myIndex = Fuse::createIndex(static::$options['keys'], static::$books);
@@ -81,6 +102,33 @@ class IndexingTest extends TestCase
         $parsedIndex = Fuse::parseIndex($data);
 
         $this->assertSame(sizeof(static::$books), $parsedIndex->size());
+    }
+
+    public function testParseIndexSearchWithGetFn(): void
+    {
+        $fuse = new Fuse(static::$books, [
+            'useExtendedSearch' => true,
+            'includeMatches' => true,
+            'includeScore' => true,
+            'threshold' => 0.3,
+            'keys' => [
+                [
+                    'name' => 'bookTitle',
+                    'getFn' => fn($book) => $book['title'],
+                ],
+                [
+                    'name' => 'authorName',
+                    'getFn' => fn($book) => $book['author']['firstName'],
+                ],
+            ],
+        ]);
+
+        $result = $fuse->search([
+            'bookTitle' => 'old man',
+        ]);
+
+        $this->assertCount(1, $result);
+        $this->assertArraySubset([0], $this->idx($result));
     }
 
     public function testFuseCanBeInstantiatedWithAnIndex(): void

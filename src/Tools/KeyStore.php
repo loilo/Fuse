@@ -23,6 +23,7 @@ class KeyStore implements JsonSerializable
     public static function createKey($key): array
     {
         $weight = 1;
+        $getFn = null;
 
         if (is_string($key) || isArray($key)) {
             $src = $key;
@@ -46,6 +47,7 @@ class KeyStore implements JsonSerializable
 
             $path = static::createKeyPath($name);
             $id = static::createKeyId($name);
+            $getFn = $key['getFn'] ?? null;
         }
 
         return [
@@ -53,6 +55,7 @@ class KeyStore implements JsonSerializable
             'id' => $id,
             'weight' => $weight,
             'src' => $src,
+            'getFn' => $getFn,
         ];
     }
 
