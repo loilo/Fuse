@@ -17,7 +17,7 @@ This is a PHP port of the awesome [Fuse.js](https://github.com/krisk/fuse) proje
 
 Check out their [demo](https://fusejs.io/demo.html) and [examples](https://fusejs.io/examples.html) to get a good feel for what this library is capable of.
 
-> Latest compatible Fuse.js version: 6.6.1
+> Latest compatible Fuse.js version: 6.6.2
 
 ---
 

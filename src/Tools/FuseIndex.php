@@ -210,7 +210,7 @@ class FuseIndex implements JsonSerializable
                 }
 
                 $record['$'][$keyIndex] = $subRecords;
-            } elseif (!isBlank($value)) {
+            } elseif (is_string($value) && !isBlank($value)) {
                 $subRecord = [
                     'v' => $value,
                     'n' => $this->norm->get($value),

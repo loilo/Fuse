@@ -9,7 +9,7 @@ use Fuse\Fuse;
 
 class BreakingValuesTest extends TestCase
 {
-    public function testNonStringsAreStillProcessed(): void
+    public function testBooleansAreStillProcessed(): void
     {
         $fuse = new Fuse(
             [
@@ -27,6 +27,27 @@ class BreakingValuesTest extends TestCase
         );
 
         $result = $fuse->search('fa');
+
+        $this->assertCount(1, $result);
+    }
+
+    public function testObjectValuesAreIgnored(): void
+    {
+        $fuse = new Fuse(
+            [
+                [
+                    'a' => 'hello',
+                ],
+                [
+                    'a' => [],
+                ],
+            ],
+            [
+                'keys' => ['a'],
+            ],
+        );
+
+        $result = $fuse->search('hello');
 
         $this->assertCount(1, $result);
     }
