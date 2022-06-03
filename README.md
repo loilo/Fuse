@@ -321,6 +321,8 @@ $fuse = new Fuse($fruits);
 $fuse->setCollection(['banana', 'pear']);
 ```
 
+---
+
 ### `add`
 
 Adds a doc to the collection and update the index accordingly.
