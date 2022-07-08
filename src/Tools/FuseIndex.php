@@ -157,7 +157,7 @@ class FuseIndex implements JsonSerializable
         $this->records[] = $record;
     }
 
-    private function addObject(array $doc, int $docIndex): void
+    private function addObject($doc, int $docIndex): void
     {
         $record = [
             'i' => $docIndex,
