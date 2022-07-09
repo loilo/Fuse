@@ -29,7 +29,7 @@ class ObjectValuesTest extends TestCase
         $fuse = new Fuse(
             [
                 new TestObject(["name" => "foo"]),
-                new TestObject(["name" => "foo"]),
+                new TestObject(["name" => "bar"]),
             ],
             [
                 'keys' => [
