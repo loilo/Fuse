@@ -38,7 +38,7 @@ function deepGet($obj, array $path, $index, &$list, &$arr)
             for ($i = 0, $len = sizeof($value); $i < $len; $i += 1) {
                 deepGet($value[$i], $path, $index + 1, $list, $arr);
             }
-        } elseif (sizeof($path) > 0) {
+        } else {
             // An object. Recurse further.
             deepGet($value, $path, $index + 1, $list, $arr);
         }
