@@ -105,7 +105,7 @@ class ExtendedSearch implements SearchInterface
                 if ($searchResult['isMatch']) {
                     $numMatches += 1;
                     $totalScore += $searchResult['score'];
-                    if ($this->options['includeMatches']) {
+                    if ($this->options['includeMatches'] ?? false) {
                         $type = $searcher::$type;
 
                         if (in_array($type, $multiMatchSet, true)) {
@@ -129,7 +129,7 @@ class ExtendedSearch implements SearchInterface
                     'score' => $totalScore / $numMatches,
                 ];
 
-                if ($this->options['includeMatches']) {
+                if ($this->options['includeMatches'] ?? false) {
                     $result['indices'] = $allIndices;
                 }
 

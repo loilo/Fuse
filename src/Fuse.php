@@ -201,7 +201,7 @@ class Fuse
                 $result = $evaluate($child, $item, $idx);
                 if (sizeof($result) > 0) {
                     array_push($res, ...$result);
-                } elseif ($node['operator'] === LogicalOperator::AND) {
+                } elseif (isset($node['operator']) && $node['operator'] === LogicalOperator::AND) {
                     return [];
                 }
             }
