@@ -21,8 +21,10 @@ class Register
     public static function register(...$searchers): void
     {
         foreach ($searchers as $searcher) {
-            if (!in_array(SearchInterface::class, class_implements($searcher), true)) {
-                throw new IncorrectSearcherTypeException();
+            if (!is_string($searcher)) {
+                throw new IncorrectSearcherTypeException(gettype($searcher));
+            } elseif (!in_array(SearchInterface::class, class_implements($searcher), true)) {
+                throw new IncorrectSearcherTypeException($searcher);
             }
         }
 
