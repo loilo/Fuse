@@ -16,6 +16,8 @@ abstract class BaseMatch
 
     protected static function getMatch(string $pattern, string $exp): ?string
     {
+        /** @var non-empty-string $exp */
+
         preg_match($exp, $pattern, $matches);
 
         return $matches[1] ?? null;
