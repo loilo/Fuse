@@ -31,7 +31,7 @@ function isLeaf(array $query): bool
 function convertToExplicit(array $query): array
 {
     return [
-        LogicalOperator::AND => array_map(fn ($key) => [$key => $query[$key]], array_keys($query)),
+        LogicalOperator::AND => array_map(fn($key) => [$key => $query[$key]], array_keys($query)),
     ];
 }
 

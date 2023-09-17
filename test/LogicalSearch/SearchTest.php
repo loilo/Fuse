@@ -128,19 +128,19 @@ class SearchTest extends TestCase
     public function testSearchWithLogicalOrWithSameQueryAcrossFieldsForWood(): void
     {
         $options = [
-            'keys' => ['title', 'author.lastName']
+            'keys' => ['title', 'author.lastName'],
         ];
         $fuse = new Fuse(static::$books, $options);
-        
+
         $query = [
             '$or' => [
                 [
-                    'title' => 'wood'
+                    'title' => 'wood',
                 ],
                 [
-                    'author.lastName' => 'wood'
-                ]
-            ]
+                    'author.lastName' => 'wood',
+                ],
+            ],
         ];
         $result = $fuse->search($query);
 

@@ -9,17 +9,14 @@ use Fuse\Fuse;
 
 class ScoringTest extends TestCase
 {
-    private static array $defaultList = [
-        'Stove',
-        'My good friend Steve from college'
-    ];
+    private static array $defaultList = ['Stove', 'My good friend Steve from college'];
     private static array $defaultOptions = [];
-    
+
     private static function setupFuse($itemList = null, $overwriteOptions = [])
     {
         $list = $itemList ?? static::$defaultList;
         $options = array_merge(static::$defaultOptions, $overwriteOptions);
-      
+
         return new Fuse($list, $options);
     }
 
@@ -38,7 +35,7 @@ class ScoringTest extends TestCase
 
     public function testIgnoreFieldNormOffAndFieldNormWeightDecreased()
     {
-        $fuse = $this::setupFuse(null, [ 'fieldNormWeight' => 0.15 ]);
+        $fuse = $this::setupFuse(null, ['fieldNormWeight' => 0.15]);
         $result = $fuse->search('Steve');
 
         // we get a list of containing 2 items

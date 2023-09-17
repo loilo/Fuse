@@ -27,17 +27,14 @@ class ObjectValuesTest extends TestCase
     public function testObjectsAreProcessed(): void
     {
         $fuse = new Fuse(
-            [
-                new TestObject(["name" => "foo"]),
-                new TestObject(["name" => "bar"]),
-            ],
+            [new TestObject(['name' => 'foo']), new TestObject(['name' => 'bar'])],
             [
                 'keys' => [
                     [
                         'name' => 'name',
                         'getFn' => function ($document) {
                             return $document->get('name');
-                        }
+                        },
                     ],
                 ],
             ],

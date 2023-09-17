@@ -23,7 +23,7 @@ class Norm
         if (isset($this->cache[$numTokens])) {
             return $this->cache[$numTokens];
         }
-      
+
         // Default function is 1/sqrt(x), weight makes that variable
         $norm = 1 / pow($numTokens, 0.5 * $this->weight);
 
