@@ -19,3 +19,6 @@ overrides:
     - files: '*.svg'
       options:
           parser: html
+    - files: 'package.json'
+      options:
+          tabWidth: 2
