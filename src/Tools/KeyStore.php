@@ -72,8 +72,6 @@ class KeyStore implements JsonSerializable
 
             $obj = static::createKey($key);
 
-            $totalWeight += $obj['weight'];
-
             $this->keys[] = &$obj;
             $this->keyMap[$obj['id']] = &$obj;
 
