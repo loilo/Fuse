@@ -6,6 +6,7 @@ use Fuse\Search\Bitap\Constants;
 use Fuse\Search\SearchInterface;
 
 use function Fuse\Core\config;
+use function Fuse\Helpers\stripDiacritics;
 use function Fuse\Search\Bitap\search;
 use function Fuse\Search\Bitap\createPatternAlphabet;
 
@@ -24,6 +25,7 @@ class BitapSearch implements SearchInterface
         $findAllMatches = $options['findAllMatches'] ?? config('findAllMatches');
         $minMatchCharLength = $options['minMatchCharLength'] ?? config('minMatchCharLength');
         $isCaseSensitive = $options['isCaseSensitive'] ?? config('isCaseSensitive');
+        $ignoreDiacritics = $options['ignoreDiacritics'] ?? config('ignoreDiacritics');
         $ignoreLocation = $options['ignoreLocation'] ?? config('ignoreLocation');
 
         $this->options = [
@@ -34,10 +36,13 @@ class BitapSearch implements SearchInterface
             'findAllMatches' => $findAllMatches,
             'minMatchCharLength' => $minMatchCharLength,
             'isCaseSensitive' => $isCaseSensitive,
+            'ignoreDiacritics' => $ignoreDiacritics,
             'ignoreLocation' => $ignoreLocation,
         ];
 
-        $this->pattern = $isCaseSensitive ? $pattern : mb_strtolower($pattern);
+        $pattern = $isCaseSensitive ? $pattern : mb_strtolower($pattern);
+        $pattern = $ignoreDiacritics ? stripDiacritics($pattern) : $pattern;
+        $this->pattern = $pattern;
 
         if (mb_strlen($this->pattern) === 0) {
             return;
@@ -76,6 +81,10 @@ class BitapSearch implements SearchInterface
     {
         if (!$this->options['isCaseSensitive']) {
             $text = mb_strtolower($text);
+        }
+
+        if ($this->options['ignoreDiacritics']) {
+            $text = stripDiacritics($text);
         }
 
         // Exact match

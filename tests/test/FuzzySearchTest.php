@@ -133,3 +133,39 @@ describe('Deep key search, with ["title", "author.firstName"]', function () use 
         });
     });
 });
+
+describe('Searching ignoring diactrictics', function () {
+    $list = [['text' => 'déjà'], ['text' => 'cafe']];
+
+    $options = [
+        'ignoreDiacritics' => true,
+        'threshold' => 0,
+        'keys' => ['text'],
+    ];
+
+    $fuse = new Fuse($list, $options);
+
+    test('Search: query with diacritics, list with diacritics', function () use ($fuse) {
+        $result = $fuse->search('déjà');
+        expect($result)->toHaveCount(1);
+        expect($result[0]['refIndex'])->toBe(0);
+    });
+
+    test('Search: query without diacritics, list with diacritics', function () use ($fuse) {
+        $result = $fuse->search('deja');
+        expect($result)->toHaveCount(1);
+        expect($result[0]['refIndex'])->toBe(0);
+    });
+
+    test('Search: query with diacritics, list without diacritics', function () use ($fuse) {
+        $result = $fuse->search('café');
+        expect($result)->toHaveCount(1);
+        expect($result[0]['refIndex'])->toBe(1);
+    });
+
+    test('Search: query without diacritics, list without diacritics', function () use ($fuse) {
+        $result = $fuse->search('cafe');
+        expect($result)->toHaveCount(1);
+        expect($result[0]['refIndex'])->toBe(1);
+    });
+});

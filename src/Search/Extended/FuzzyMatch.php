@@ -26,6 +26,7 @@ class FuzzyMatch extends BaseMatch
             'findAllMatches' => $options['findAllMatches'] ?? config('findAllMatches'),
             'minMatchCharLength' => $options['minMatchCharLength'] ?? config('minMatchCharLength'),
             'isCaseSensitive' => $options['isCaseSensitive'] ?? config('isCaseSensitive'),
+            'ignoreDiacritics' => $options['ignoreDiacritics'] ?? config('ignoreDiacritics'),
             'ignoreLocation' => $options['ignoreLocation'] ?? config('ignoreLocation'),
         ]);
     }

@@ -7,6 +7,7 @@ use Fuse\Search\Extended\IncludeMatch;
 use Fuse\Search\SearchInterface;
 
 use function Fuse\Core\config;
+use function Fuse\Helpers\stripDiacritics;
 use function Fuse\Search\Extended\parseQuery;
 
 /**
@@ -47,9 +48,11 @@ class ExtendedSearch implements SearchInterface
     public function __construct(string $pattern, array $options = [])
     {
         $isCaseSensitive = $options['isCaseSensitive'] ?? config('isCaseSensitive');
+        $ignoreDiacritics = $options['ignoreDiacritics'] ?? config('ignoreDiacritics');
 
         $this->options = [
             'isCaseSensitive' => $isCaseSensitive,
+            'ignoreDiacritics' => $ignoreDiacritics,
             'includeMatches' => $options['includeMatches'] ?? config('includeMatches'),
             'minMatchCharLength' => $options['minMatchCharLength'] ?? config('minMatchCharLength'),
             'findAllMatches' => $options['findAllMatches'] ?? config('findAllMatches'),
@@ -59,7 +62,9 @@ class ExtendedSearch implements SearchInterface
             'distance' => $options['distance'] ?? config('distance'),
         ];
 
-        $this->pattern = $isCaseSensitive ? $pattern : mb_strtolower($pattern);
+        $pattern = $isCaseSensitive ? $pattern : mb_strtolower($pattern);
+        $pattern = $ignoreDiacritics ? stripDiacritics($pattern) : $pattern;
+        $this->pattern = $pattern;
         $this->query = parseQuery($this->pattern, $this->options);
     }
 
@@ -84,6 +89,7 @@ class ExtendedSearch implements SearchInterface
         $multiMatchSet = [FuzzyMatch::$type, IncludeMatch::$type];
 
         $text = $this->options['isCaseSensitive'] ? $text : mb_strtolower($text);
+        $text = $this->options['ignoreDiacritics'] ? stripDiacritics($text) : $text;
 
         $numMatches = 0;
         $allIndices = [];

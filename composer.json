@@ -2,7 +2,7 @@
     "name": "loilo/fuse",
     "description": "Fuzzy search for PHP based on Bitap algorithm",
     "type": "library",
-    "version": "7.0.1",
+    "version": "7.1.0",
     "license": "Apache-2.0",
     "authors": [
         {
@@ -27,6 +27,7 @@
             "src/Core/config.php",
             "src/Core/format.php",
             "src/Core/parse.php",
+            "src/Helpers/diacritics.php",
             "src/Helpers/get.php",
             "src/Helpers/sort.php",
             "src/Helpers/types.php",

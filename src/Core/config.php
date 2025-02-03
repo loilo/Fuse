@@ -11,6 +11,7 @@ function config(...$args)
         $config = (object) [
             // Basic options
             'isCaseSensitive' => false,
+            'ignoreDiacritics' => false,
             'includeScore' => false,
             'keys' => [],
             'shouldSort' => true,
