@@ -1,10 +1,10 @@
 {
   "devDependencies": {
-    "@prettier/plugin-php": "^0.20.1",
-    "@prettier/plugin-xml": "^3.2.1",
-    "prettier": "^3.0.3"
+    "@prettier/plugin-php": "^0.22.4",
+    "@prettier/plugin-xml": "^3.4.1",
+    "prettier": "^3.4.2"
   },
   "scripts": {
-    "format": "prettier --plugin @prettier/plugin-php --plugin @prettier/plugin-xml --write 'src/**/*.php' 'test/**/*.php' '*.xml'"
+    "format": "prettier --plugin @prettier/plugin-php --plugin @prettier/plugin-xml --write 'src/**/*.php' 'tests/**/*.php' '*.xml'"
   }
 }

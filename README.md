@@ -40,7 +40,7 @@ This package is available via Composer. To add it to your project, just run:
 composer require loilo/fuse
 ```
 
-Note that at least PHP 7.4 is needed to use Fuse.
+Note that at least PHP 7.4 is needed to use Fuse. For technical reasons, automatic testing is only run against PHP 8.2+.
 
 ## Usage
 
@@ -513,9 +513,9 @@ There are different kinds of code checks in place for this project. All of these
 Command | Purpose | Description
 -|-|-
 `vendor/bin/phpcs` | check code style | Run [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) to verify that the Fuse source code abides by the [PSR-12](https://www.php-fig.org/psr/psr-12/) coding style.
-`vendor/bin/psalm` | static analysis | Run [Psalm](https://psalm.dev/) against the codebase to avoid type-related errors and unsafe coding patterns.
-`vendor/bin/phpunit` | check program logic | Run all [PHPUnit](https://phpunit.de/) tests from the [`test`](test/) folder.
+`vendor/bin/phpstan` | static analysis | Run [PHPStan](https://phpstan.org/) against the codebase to avoid type-related errors and unsafe coding patterns.
+`vendor/bin/phpunit` | check program logic | Run all [PHPUnit](https://phpunit.de/) tests from the [`tests`](tests/) folder.
 
 ### Contributing
 
-Before submitting a pull request, please add relevant tests to the [`test`](test/) folder.
+Before submitting a pull request, please add relevant tests to the [`tests`](tests/) folder.

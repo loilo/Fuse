@@ -28,15 +28,15 @@ class Register
             }
         }
 
-        static::$registeredSearchers = array_values(
-            array_unique(array_merge(static::$registeredSearchers, $searchers)),
+        self::$registeredSearchers = array_values(
+            array_unique(array_merge(self::$registeredSearchers, $searchers)),
         );
     }
 
     public static function createSearcher(string $pattern, array $options): SearchInterface
     {
-        for ($i = 0, $len = sizeof(static::$registeredSearchers); $i < $len; $i += 1) {
-            $searcherClass = static::$registeredSearchers[$i];
+        for ($i = 0, $len = sizeof(self::$registeredSearchers); $i < $len; $i += 1) {
+            $searcherClass = self::$registeredSearchers[$i];
             if ($searcherClass::condition($pattern, $options)) {
                 /**
                  * @var SearchInterface

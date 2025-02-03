@@ -25,8 +25,6 @@ function isLeaf(array $query): bool
 
 /**
  * @return array[][]
- *
- * @psalm-return array{$and: list<array>}
  */
 function convertToExplicit(array $query): array
 {

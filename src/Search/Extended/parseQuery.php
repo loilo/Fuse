@@ -23,8 +23,6 @@ const OR_TOKEN = '|';
 // "^core go$ | rb$ | py$ xy$" => [["^core", "go$"], ["rb$"], ["py$", "xy$"]]
 /**
  * @return (ExactMatch|FuzzyMatch|IncludeMatch|InverseExactMatch|InversePrefixExactMatch|InverseSuffixExactMatch|PrefixExactMatch|SuffixExactMatch)[][]
- *
- * @psalm-return non-empty-list<list<ExactMatch|FuzzyMatch|IncludeMatch|InverseExactMatch|InversePrefixExactMatch|InverseSuffixExactMatch|PrefixExactMatch|SuffixExactMatch>>
  */
 function parseQuery(string $pattern, array $options = []): array
 {

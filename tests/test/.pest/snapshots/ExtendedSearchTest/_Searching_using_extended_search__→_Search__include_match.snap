@@ -1,0 +1,40 @@
+[
+    {
+        "item": {
+            "text": "hello word"
+        },
+        "refIndex": 0,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        0,
+                        4
+                    ]
+                ],
+                "value": "hello word",
+                "key": "text"
+            }
+        ],
+        "score": 8.569061098350962e-12
+    },
+    {
+        "item": {
+            "text": "indeed fine hello foo"
+        },
+        "refIndex": 2,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        12,
+                        16
+                    ]
+                ],
+                "value": "indeed fine hello foo",
+                "key": "text"
+            }
+        ],
+        "score": 1.4901161193847656e-8
+    }
+]

@@ -9,6 +9,7 @@ abstract class BaseMatch
     protected static string $multiRegex = '/(.+)/';
     protected string $pattern;
 
+    // @phpstan-ignore constructor.unusedParameter
     public function __construct(string $pattern, array $options = [])
     {
         $this->pattern = $pattern;

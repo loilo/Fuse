@@ -1,0 +1,97 @@
+[
+    {
+        "item": {
+            "text": "smithee"
+        },
+        "refIndex": 4,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        0,
+                        6
+                    ]
+                ],
+                "value": "smithee",
+                "key": "text"
+            }
+        ],
+        "score": 2.220446049250313e-16
+    },
+    {
+        "item": {
+            "text": "smith"
+        },
+        "refIndex": 5,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        0,
+                        4
+                    ]
+                ],
+                "value": "smith",
+                "key": "text"
+            }
+        ],
+        "score": 2.220446049250313e-16
+    },
+    {
+        "item": {
+            "text": "how are you"
+        },
+        "refIndex": 1,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        0,
+                        10
+                    ]
+                ],
+                "value": "how are you",
+                "key": "text"
+            }
+        ],
+        "score": 9.287439764962262e-10
+    },
+    {
+        "item": {
+            "text": "I am fine"
+        },
+        "refIndex": 3,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        0,
+                        8
+                    ]
+                ],
+                "value": "I am fine",
+                "key": "text"
+            }
+        ],
+        "score": 9.287439764962262e-10
+    },
+    {
+        "item": {
+            "text": "indeed fine hello foo"
+        },
+        "refIndex": 2,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        0,
+                        20
+                    ]
+                ],
+                "value": "indeed fine hello foo",
+                "key": "text"
+            }
+        ],
+        "score": 1.4901161193847656e-8
+    }
+]

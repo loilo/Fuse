@@ -1,0 +1,21 @@
+[
+    {
+        "item": {
+            "text": "smith"
+        },
+        "refIndex": 5,
+        "matches": [
+            {
+                "indices": [
+                    [
+                        0,
+                        4
+                    ]
+                ],
+                "value": "smith",
+                "key": "text"
+            }
+        ],
+        "score": 2.220446049250313e-16
+    }
+]

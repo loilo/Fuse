@@ -15,7 +15,7 @@ jobs:
         strategy:
             matrix:
                 os: [ubuntu-latest, windows-latest]
-                php-version: [7.4, 8.0, 8.1, 8.2, 8.3]
+                php-version: [8.2, 8.3, 8.4]
 
         steps:
             - uses: actions/checkout@v2
@@ -27,5 +27,5 @@ jobs:
                   tools: composer
             - run: composer install
             - run: vendor/bin/phpcs
-            - run: vendor/bin/psalm
-            - run: vendor/bin/phpunit
+            - run: vendor/bin/phpstan
+            - run: vendor/bin/pest

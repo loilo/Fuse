@@ -16,6 +16,7 @@ class FuseIndex implements JsonSerializable
      */
     public static function create(array $keys, array $docs, array $options = []): self
     {
+        // @phpstan-ignore new.static
         $myIndex = new static([
             'getFn' => $options['getFn'] ?? config('getFn'),
             'fieldNormWeight' => $options['fieldNormWeight'] ?? config('fieldNormWeight'),
@@ -32,6 +33,7 @@ class FuseIndex implements JsonSerializable
      */
     public static function parse(array $data, array $options = []): self
     {
+        // @phpstan-ignore new.static
         $myIndex = new static([
             'getFn' => $options['getFn'] ?? config('getFn'),
             'fieldNormWeight' => $options['fieldNormWeight'] ?? config('fieldNormWeight'),

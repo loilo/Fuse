@@ -11,8 +11,6 @@ use function Fuse\Core\config;
 
 /**
  * @return (array|bool|float|int|mixed)[]
- *
- * @psalm-return array{isMatch: bool, score: 1|float|mixed, indices?: array}
  */
 function search(string $text, string $pattern, array $patternAlphabet, array $options = []): array
 {
