@@ -523,7 +523,7 @@ Command | Purpose | Description
 -|-|-
 `vendor/bin/phpcs` | check code style | Run [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) to verify that the Fuse source code abides by the [PSR-12](https://www.php-fig.org/psr/psr-12/) coding style.
 `vendor/bin/phpstan` | static analysis | Run [PHPStan](https://phpstan.org/) against the codebase to avoid type-related errors and unsafe coding patterns.
-`vendor/bin/phpunit` | check program logic | Run all [PHPUnit](https://phpunit.de/) tests from the [`tests`](tests/) folder.
+`vendor/bin/pest` | check program logic | Run all [Pest](https://pestphp.com/) tests from the [`tests`](tests/) folder.
 
 ### Contributing
 
