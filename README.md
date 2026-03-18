@@ -521,7 +521,7 @@ There are different kinds of code checks in place for this project. All of these
 <!-- prettier-ignore -->
 Command | Purpose | Description
 -|-|-
-`vendor/bin/phpcs` | check code style | Run [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) to verify that the Fuse source code abides by the [PSR-12](https://www.php-fig.org/psr/psr-12/) coding style.
+`vendor/bin/phpcs` | check code style | Run [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer) to verify that the Fuse source code abides by the [PSR-12](https://www.php-fig.org/psr/psr-12/) coding style.
 `vendor/bin/phpstan` | static analysis | Run [PHPStan](https://phpstan.org/) against the codebase to avoid type-related errors and unsafe coding patterns.
 `vendor/bin/pest` | check program logic | Run all [Pest](https://pestphp.com/) tests from the [`tests`](tests/) folder.
 
