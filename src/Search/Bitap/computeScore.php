@@ -2,16 +2,23 @@
 
 namespace Fuse\Search\Bitap;
 
-use function Fuse\Core\config;
-
-function computeScore(string $pattern, array $options = [])
-{
-    $errors = $options['errors'] ?? 0;
-    $currentLocation = $options['currentLocation'] ?? 0;
-    $expectedLocation = $options['expectedLocation'] ?? 0;
-    $distance = $options['distance'] ?? config('distance');
-    $ignoreLocation = $options['ignoreLocation'] ?? config('ignoreLocation');
-
+/**
+ * @param string $pattern
+ * @param int $errors
+ * @param int $currentLocation
+ * @param int $expectedLocation
+ * @param int $distance
+ * @param bool $ignoreLocation
+ * @return float
+ */
+function computeScore(
+    $pattern,
+    $errors,
+    $currentLocation,
+    $expectedLocation,
+    $distance,
+    $ignoreLocation
+) {
     $accuracy = $errors / mb_strlen($pattern);
 
     if ($ignoreLocation) {
@@ -20,9 +27,9 @@ function computeScore(string $pattern, array $options = [])
 
     $proximity = abs($expectedLocation - $currentLocation);
 
-    if (!$distance) {
+    if ($distance === 0) {
         // Dodge divide by zero error.
-        return $proximity ? 1.0 : $accuracy;
+        return $proximity === 0 ? 1.0 : $accuracy;
     }
 
     return $accuracy + $proximity / $distance;

@@ -49,12 +49,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
 
     // Get all exact matches, here for speed up
     while (($index = mb_strpos($text, $pattern, $bestLocation)) !== false) {
-        $score = computeScore($pattern, [
-            'currentLocation' => $index,
-            'expectedLocation' => $expectedLocation,
-            'distance' => $distance,
-            'ignoreLocation' => $ignoreLocation,
-        ]);
+        $score = computeScore($pattern, 0, $index, $expectedLocation, $distance, $ignoreLocation);
 
         $currentThreshold = min($score, $currentThreshold);
         $bestLocation = $index + $patternLen;
@@ -85,13 +80,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
         $binMid = $binMax;
 
         while ($binMin < $binMid) {
-            $score = computeScore($pattern, [
-                'errors' => $i,
-                'currentLocation' => $expectedLocation + $binMid,
-                'expectedLocation' => $expectedLocation,
-                'distance' => $distance,
-                'ignoreLocation' => $ignoreLocation,
-            ]);
+            $score = computeScore($pattern, $i, $expectedLocation + $binMid, $expectedLocation, $distance, $ignoreLocation);
 
             if ($score <= $currentThreshold) {
                 $binMin = $binMid;
@@ -136,13 +125,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
             }
 
             if ($bitArr[$j] & $mask) {
-                $finalScore = computeScore($pattern, [
-                    'errors' => $i,
-                    'currentLocation' => $currentLocation,
-                    'expectedLocation' => $expectedLocation,
-                    'distance' => $distance,
-                    'ignoreLocation' => $ignoreLocation,
-                ]);
+                $finalScore = computeScore($pattern, $i, $currentLocation, $expectedLocation, $distance, $ignoreLocation);
 
                 // This match will almost certainly be better than any existing match.
                 // But check anyway.
@@ -163,13 +146,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
         }
 
         // No hope for a (better) match at greater error levels.
-        $score = computeScore($pattern, [
-            'errors' => $i + 1,
-            'currentLocation' => $expectedLocation,
-            'expectedLocation' => $expectedLocation,
-            'distance' => $distance,
-            'ignoreLocation' => $ignoreLocation,
-        ]);
+        $score = computeScore($pattern, $i + 1, $expectedLocation, $expectedLocation, $distance, $ignoreLocation);
 
         if ($score > $currentThreshold) {
             break;
