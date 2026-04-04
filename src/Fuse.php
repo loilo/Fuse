@@ -5,10 +5,12 @@ namespace Fuse;
 use Fuse\Core\LogicalOperator;
 use Fuse\Core\Register;
 use Fuse\Search\Extended\ExtendedSearch;
+use Fuse\Search\SearchInterface;
 use Fuse\Tools\FuseIndex;
 use Fuse\Tools\KeyStore;
+use Fuse\Tools\MaxHeap;
 
-use function Fuse\Core\computeScore;
+use function Fuse\Core\{computeScore, computeScoreSingle};
 use function Fuse\Core\config;
 use function Fuse\Core\format;
 use function Fuse\Core\parse;
@@ -31,7 +33,19 @@ class Fuse
         return config(...$args);
     }
 
+    /**
+     * @param string ...$plugins
+     */
+    public static function use(...$plugins): void
+    {
+        foreach ($plugins as $plugin) {
+            Register::register($plugin);
+        }
+    }
+
     private KeyStore $keyStore;
+    private ?string $lastQuery = null;
+    private ?SearchInterface $lastSearcher = null;
     private array $options;
     private array $docs;
     private FuseIndex $myIndex;
@@ -49,6 +63,19 @@ class Fuse
         $this->keyStore = new KeyStore($this->options['keys']);
 
         $this->setCollection($docs, $index);
+    }
+
+    private function getSearcher(string $query)
+    {
+        if ($this->lastQuery === $query) {
+            return $this->lastSearcher;
+        }
+
+        $searcher = Register::createSearcher($query, $this->options);
+        $this->lastQuery = $query;
+        $this->lastSearcher = $searcher;
+        
+        return $searcher;
     }
 
     public function getCollection(): array
@@ -83,18 +110,25 @@ class Fuse
         $predicate = is_null($predicate) ? fn($doc, $i): bool => false : $predicate;
 
         $results = [];
+        $indicesToRemove = [];
 
         for ($i = 0, $len = sizeof($this->docs); $i < $len; $i += 1) {
             $doc = $this->docs[$i];
 
             if ($predicate($doc, $i)) {
-                $this->removeAt($i);
-                $i -= 1;
-                $len -= 1;
-
                 $results[] = $doc;
+                $indicesToRemove[] = $i;
             }
         }
+
+        if (!empty($indicesToRemove)) {
+            // Remove from docs in reverse to preserve indices
+            for ($i = sizeof($indicesToRemove) - 1; $i >= 0; $i -= 1) {
+                array_splice($this->docs, $indicesToRemove[$i], 1);
+            }
+        }
+
+        $this->myIndex->removeAll($indicesToRemove);
 
         return $results;
     }
@@ -114,22 +148,42 @@ class Fuse
     {
         $limit = $options['limit'] ?? -1;
 
-        $results = is_string($query)
-            ? (is_string($this->docs[0] ?? null)
-                ? $this->searchStringList($query)
-                : $this->searchObjectList($query))
-            : $this->searchLogical($query);
+        $useHeap = isNumber($limit) && $limit > 0 && is_string($query);
 
-        computeScore($results, [
-            'ignoreFieldNorm' => $this->options['ignoreFieldNorm'],
-        ]);
+        if ($useHeap) {
+            $heap = new MaxHeap($limit);
 
-        if ($this->options['shouldSort']) {
-            usort($results, $this->options['sortFn']);
-        }
+            if (is_string($this->docs[0] ?? null)) {
+                $this->searchStringList($query, [
+                    'heap' => $heap,
+                    'ignoreFieldNorm' => $this->options['ignoreFieldNorm'],
+                ]);
+            } else {
+                $this->searchObjectList($query, [
+                    'heap' => $heap,
+                    'ignoreFieldNorm' => $this->options['ignoreFieldNorm'],
+                ]);
+            }
 
-        if (isNumber($limit) && $limit > -1) {
-            $results = array_slice($results, 0, $limit);
+            $results = $heap->extractSorted($this->options['sortFn']);
+        } else {
+            $results = is_string($query)
+                ? (is_string($this->docs[0] ?? null)
+                    ? $this->searchStringList($query)
+                    : $this->searchObjectList($query))
+                : $this->searchLogical($query);
+    
+            computeScore($results, [
+                'ignoreFieldNorm' => $this->options['ignoreFieldNorm'],
+            ]);
+    
+            if ($this->options['shouldSort']) {
+                usort($results, $this->options['sortFn']);
+            }
+    
+            if (isNumber($limit) && $limit > -1) {
+                $results = array_slice($results, 0, $limit);
+            }
         }
 
         return format($results, $this->docs, [
@@ -138,10 +192,13 @@ class Fuse
         ]);
     }
 
-    private function searchStringList(string $query): array
+    private function searchStringList(string $query, array $options = []): ?array
     {
-        $searcher = Register::createSearcher($query, $this->options);
-        $results = [];
+        $heap = $options['heap'] ?? null;
+        $ignoreFieldNorm = $options['ignoreFieldNorm'] ?? null;
+
+        $searcher = $this->getSearcher($query);
+        $results = $heap ? null : [];
 
         // Iterate over every string in the index
         foreach ($this->myIndex->records as ['v' => $text, 'i' => $idx, 'n' => $norm]) {
@@ -152,7 +209,7 @@ class Fuse
             $searchInResult = $searcher->searchIn($text);
 
             if ($searchInResult['isMatch']) {
-                $results[] = [
+                $result = [
                     'item' => $text,
                     'idx' => $idx,
                     'matches' => [
@@ -164,6 +221,18 @@ class Fuse
                         ],
                     ],
                 ];
+
+                if ($heap) {
+                    computeScoreSingle($result, [
+                        'ignoreFieldNorm' => $ignoreFieldNorm,
+                    ]);
+
+                    if ($heap->shouldInsert($result['score'])) {
+                        $heap->insert($result);
+                    }
+                } else {
+                    $results[] = $result;
+                }
             }
         }
 
@@ -238,10 +307,13 @@ class Fuse
         return $results;
     }
 
-    private function searchObjectList(string $query)
+    private function searchObjectList(string $query, array $options = [])
     {
-        $searcher = Register::createSearcher($query, $this->options);
-        $results = [];
+        $heap = $options['heap'] ?? null;
+        $ignoreFieldNorm = $options['ignoreFieldNorm'] ?? null;
+
+        $searcher = $this->getSearcher($query);
+        $results = $heap ? null : [];
 
         // List is an array of arrays
         foreach ($this->myIndex->records as ['$' => $item, 'i' => $idx]) {
@@ -263,12 +335,24 @@ class Fuse
                 );
             }
 
-            if (sizeof($matches) > 0) {
-                $results[] = [
+            if (!empty($matches)) {
+                $result = [
                     'idx' => $idx,
                     'item' => $item,
                     'matches' => $matches,
                 ];
+
+                if ($heap) {
+                    computeScoreSingle($result, [
+                        'ignoreFieldNorm' => $ignoreFieldNorm,
+                    ]);
+
+                    if ($heap->shouldInsert($result['score'])) {
+                        $heap->insert($result);
+                    }
+                } else {
+                    $results[] = $result;
+                }
             }
         }
 

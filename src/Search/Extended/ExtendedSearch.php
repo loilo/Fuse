@@ -115,7 +115,7 @@ class ExtendedSearch implements SearchInterface
                         $type = $searcher::$type;
 
                         if (in_array($type, $multiMatchSet, true)) {
-                            $allIndices = array_merge($allIndices, $searchResult['indices']);
+                            array_push($allIndices, ...$searchResult['indices']);
                         } else {
                             $allIndices[] = $searchResult['indices'];
                         }

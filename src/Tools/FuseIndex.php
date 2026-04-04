@@ -131,6 +131,20 @@ class FuseIndex implements JsonSerializable
         }
     }
 
+    // Removes docs at the specified indices (must be sorted ascending)
+    public function removeAll($indices)
+    {
+        // Remove in reverse order to avoid index shifting during splice
+        for ($i = sizeof($indices) - 1; $i >= 0; $i -= 1) {
+            array_splice($this->records, $indices[$i], 1);
+        }
+
+        // Single re-index pass
+        for ($i = 0, $len = sizeof($this->records); $i < $len; $i += 1) {
+            $this->records[$i]['i'] = $i;
+        }
+    }
+
     public function getValueForItemAtKeyId(array $item, $keyId)
     {
         return $item[$this->keysMap[$keyId]];
@@ -180,34 +194,33 @@ class FuseIndex implements JsonSerializable
 
             if (isArray($value)) {
                 $subRecords = [];
-                $stack = [['nestedArrIndex' => -1, 'value' => $value]];
 
-                while (sizeof($stack) > 0) {
-                    $stackItem = array_pop($stack);
-                    $value = $stackItem['value'];
+                for ($i = 0, $len = sizeof($value); $i < $len; $i += 1) {
+                    $item = $value[$i];
 
-                    if (is_null($value)) {
+                    if (is_null($item)) {
                         continue;
                     }
 
-                    if (is_string($value) && !isBlank($value)) {
+                    if (is_string($item)) {
+                        // Custom getFn returning plain string array (backward compat)
+                        if (!isBlank($item)) {
+                            $subRecord = [
+                                'v' => $item,
+                                'i' => $i,
+                                'n' => $this->norm->get($value),
+                            ];
+
+                            $subRecords[] = $subRecord;
+                        }
+                    } elseif (is_string($item['v']) && !isBlank($item['v'])) {
                         $subRecord = [
-                            'v' => $value,
-                            'i' => $stackItem['nestedArrIndex'],
-                            'n' => $this->norm->get($value),
+                            'v' => $item['v'],
+                            'i' => $item['i'],
+                            'n' => $this->norm->get($item['v']),
                         ];
 
                         $subRecords[] = $subRecord;
-                    } elseif (isArray($value)) {
-                        foreach ($value as $k => $item) {
-                            $stack[] = [
-                                'nestedArrIndex' => $k,
-                                'value' => $item,
-                            ];
-                        }
-                    } else {
-                        // If we're here, the `path` is either incorrect, or pointing to a non-string.
-                        // throw new \Exception(sprintf('Path "%s" points to a non-string value. Received: %s', $key, $value))
                     }
                 }
 

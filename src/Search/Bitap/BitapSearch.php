@@ -16,6 +16,28 @@ class BitapSearch implements SearchInterface
     private $options;
     private $pattern;
 
+    private static function mergeIndices(array $indices)
+    {
+        if (sizeof($indices) <= 1) return $indices;
+
+        usort($indices, fn ($a, $b) => $a[0] - $b[0] ?: $a[1] - $b[1]);
+
+        $merged = [$indices[0]];
+
+        for ($i = 1, $len = sizeof($indices); $i < $len; $i += 1) {
+            $last = $merged[sizeof($merged) - 1];
+            $curr = $indices[$i];
+
+            if ($curr[0] <= $last[1] + 1) {
+                $merged[sizeof($merged) - 1][1] = max($last[1], $curr[1]);
+            } else {
+                $merged[] = $curr;
+            }
+        }
+
+        return $merged;
+    }
+
     public function __construct(string $pattern, array $options = [])
     {
         $location = $options['location'] ?? config('location');
@@ -125,7 +147,7 @@ class BitapSearch implements SearchInterface
             $totalScore += $search['score'];
 
             if ($search['isMatch'] && isset($search['indices'])) {
-                $allIndices = array_merge($allIndices, $search['indices']);
+                array_push($allIndices, ...$search['indices']);
             }
         }
 
@@ -135,7 +157,7 @@ class BitapSearch implements SearchInterface
         ];
 
         if ($hasMatches && $this->options['includeMatches']) {
-            $result['indices'] = $allIndices;
+            $result['indices'] = self::mergeIndices($allIndices);
         }
 
         return $result;

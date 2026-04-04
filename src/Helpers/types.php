@@ -2,6 +2,11 @@
 
 namespace Fuse\Helpers\Types;
 
+function toString($value): string
+{
+    return is_bool($value) ? json_encode($value) : strval($value);
+}
+
 function isArray($value): bool
 {
     if (!is_array($value)) {

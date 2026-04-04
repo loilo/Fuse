@@ -169,3 +169,61 @@ describe('Searching ignoring diactrictics', function () {
         expect($result[0]['refIndex'])->toBe(1);
     });
 });
+
+describe('Threshold filtering', function () {
+    $list = [
+        ['name' => 'Simple Storage Service'],
+        ['name' => 'Elastic File System'],
+    ];
+
+    test('results with score > threshold are excluded (ignoreLocation: true)', function () use ($list) {
+        $fuse = new Fuse($list, [
+            'keys' => ['name'],
+            'includeScore' => true,
+            'threshold' => 0.3,
+            'ignoreLocation' => true,
+        ]);
+
+        $results = $fuse->search('Simple Storage Service');
+
+        foreach ($results as $r) {
+            expect($r['score'])->toBeLessThanOrEqual(0.3);
+        }
+
+        expect($results)->toHaveCount(1);
+        expect($results[0]['item']['name'])->toBe('Simple Storage Service');
+    });
+
+    test('results with score > threshold are excluded (distance: 500)', function () use ($list) {
+        $fuse = new Fuse($list, [
+            'keys' => ['name'],
+            'includeScore' => true,
+            'threshold' => 0.3,
+            'distance' => 500,
+        ]);
+
+        $results = $fuse->search('Simple Storage Service');
+
+        foreach ($results as $r) {
+            expect($r['score'])->toBeLessThanOrEqual(0.3);
+        }
+
+        expect($results)->toHaveCount(1);
+        expect($results[0]['item']['name'])->toBe('Simple Storage Service');
+    });
+
+    test('threshold=0 only returns exact matches', function () {
+        $fuse = new Fuse(['apple', 'application', 'apply'], [
+            'includeScore' => true,
+            'threshold' => 0,
+        ]);
+
+        $results = $fuse->search('apple');
+
+        expect($results)->toHaveCount(1);
+
+        foreach ($results as $r) {
+            expect($r['score'])->toBeLessThanOrEqual(0.001);
+        }
+    });
+});

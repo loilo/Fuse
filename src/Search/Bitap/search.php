@@ -40,6 +40,16 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
     // Is there a nearby exact match? (speedup)
     $bestLocation = $expectedLocation;
 
+    // Inlined score computation — avoids object allocation per call in hot loops.
+    // See ./computeScore.php for the documented version of this formula.
+    $calcScore = function ($errors, $currentLocation) use ($patternLen, $ignoreLocation, $expectedLocation, $distance) {
+        $accuracy = $errors / $patternLen;
+        if ($ignoreLocation) return $accuracy;
+        $proximity = abs($expectedLocation - $currentLocation);
+        if (!$distance) return $proximity ? 1.0 : $accuracy;
+        return $accuracy + $proximity / $distance;
+    };
+
     // Performance: only computer matches when the minMatchCharLength > 1
     // OR if `includeMatches` is true.
     $computeMatches = $minMatchCharLength > 1 || $includeMatches;
@@ -49,12 +59,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
 
     // Get all exact matches, here for speed up
     while (($index = mb_strpos($text, $pattern, $bestLocation)) !== false) {
-        $score = computeScore($pattern, [
-            'currentLocation' => $index,
-            'expectedLocation' => $expectedLocation,
-            'distance' => $distance,
-            'ignoreLocation' => $ignoreLocation,
-        ]);
+        $score = $calcScore(0, $index);
 
         $currentThreshold = min($score, $currentThreshold);
         $bestLocation = $index + $patternLen;
@@ -85,13 +90,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
         $binMid = $binMax;
 
         while ($binMin < $binMid) {
-            $score = computeScore($pattern, [
-                'errors' => $i,
-                'currentLocation' => $expectedLocation + $binMid,
-                'expectedLocation' => $expectedLocation,
-                'distance' => $distance,
-                'ignoreLocation' => $ignoreLocation,
-            ]);
+            $score = $calcScore($i, $expectedLocation + $binMid);
 
             if ($score <= $currentThreshold) {
                 $binMin = $binMid;
@@ -136,13 +135,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
             }
 
             if ($bitArr[$j] & $mask) {
-                $finalScore = computeScore($pattern, [
-                    'errors' => $i,
-                    'currentLocation' => $currentLocation,
-                    'expectedLocation' => $expectedLocation,
-                    'distance' => $distance,
-                    'ignoreLocation' => $ignoreLocation,
-                ]);
+                $finalScore = $calcScore($i, $currentLocation);
 
                 // This match will almost certainly be better than any existing match.
                 // But check anyway.
@@ -163,13 +156,7 @@ function search(string $text, string $pattern, array $patternAlphabet, array $op
         }
 
         // No hope for a (better) match at greater error levels.
-        $score = computeScore($pattern, [
-            'errors' => $i + 1,
-            'currentLocation' => $expectedLocation,
-            'expectedLocation' => $expectedLocation,
-            'distance' => $distance,
-            'ignoreLocation' => $ignoreLocation,
-        ]);
+        $score = $calcScore($i + 1, $expectedLocation);
 
         if ($score > $currentThreshold) {
             break;
